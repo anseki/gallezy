@@ -159,12 +159,11 @@ window.addEventListener('load', () => {
 
   /**
    * Set CSS props based on current `stats`, `curImgRatioEnabled` and `curRotate`.
-   * @param {Object|null} forceStats - Force it uses temporary props of `stats`.
    * @param {boolean|null} dontFix - Avoid adjusting for scroll bar.
    * @param {boolean|null} dontInitViewSize - `dontFix` must be `true`, aboid call `initViewSize`.
    * @returns {void}
    */
-  function setImgSize(forceStats, dontFix, dontInitViewSize) {
+  function setImgSize(dontFix, dontInitViewSize) {
 
     // [obj.A, obj.B] = [obj.B, obj.A];
     function exchangeProps(obj, propA, propB) {
@@ -173,12 +172,7 @@ window.addEventListener('load', () => {
       obj[propB] = pass;
     }
 
-    var sizeStats =
-        ['winRatio', 'winRatioBase', 'avoidEnlarge', 'imgRatio'].reduce((sizeStats, prop) => {
-          if (!sizeStats.hasOwnProperty(prop)) { sizeStats[prop] = stats[prop]; }
-          return sizeStats;
-        }, forceStats || {}),
-      sizeProps = {}, exWH, updateProps, viewResized;
+    var sizeProps = {}, exWH, updateProps, viewResized;
 
     /*
       Don't use maxWidth/Height to reduce update styles.
@@ -199,33 +193,33 @@ window.addEventListener('load', () => {
     }
 
     if (curImgRatioEnabled) {
-      sizeProps.width = sizeProps.bBox_width = `${curItem.width * IMG_RATIO[sizeStats.imgRatio]}px`;
+      sizeProps.width = sizeProps.bBox_width = `${curItem.width * IMG_RATIO[stats.imgRatio]}px`;
       if (exWH) { exchangeProps(sizeProps, 'bBox_width', 'bBox_height'); }
 
     // winRatio mode
     // `viewWidth/Height * <RATIO>` works as `vw/vh` of view area (not view-port).
-    } else if (sizeStats.winRatioBase === 'width') {
-      let lenValue = viewWidth * WIN_RATIO[sizeStats.winRatio],
+    } else if (stats.winRatioBase === 'width') {
+      let lenValue = viewWidth * WIN_RATIO[stats.winRatio],
         prop = exWH ? 'height' : 'width';
-      if (sizeStats.avoidEnlarge && lenValue > curItem[prop]) { lenValue = curItem[prop]; }
+      if (stats.avoidEnlarge && lenValue > curItem[prop]) { lenValue = curItem[prop]; }
       sizeProps[prop] = sizeProps.bBox_width = `${lenValue}px`;
 
-    } else if (sizeStats.winRatioBase === 'height') {
-      let lenValue = viewHeight * WIN_RATIO[sizeStats.winRatio],
+    } else if (stats.winRatioBase === 'height') {
+      let lenValue = viewHeight * WIN_RATIO[stats.winRatio],
         prop = exWH ? 'width' : 'height';
-      if (sizeStats.avoidEnlarge && lenValue > curItem[prop]) { lenValue = curItem[prop]; }
+      if (stats.avoidEnlarge && lenValue > curItem[prop]) { lenValue = curItem[prop]; }
       sizeProps[prop] = sizeProps.bBox_height = `${lenValue}px`;
 
-    } else if (sizeStats.winRatioBase === 'both') {
+    } else if (stats.winRatioBase === 'both') {
       // `objectFit` seems not high-performance.
       let propRefWidth = exWH ? 'height' : 'width',
         propRefHeight = exWH ? 'width' : 'height',
-        rateWinWidth = viewWidth * WIN_RATIO[sizeStats.winRatio] / curItem[propRefWidth],
-        rateWinHeight = viewHeight * WIN_RATIO[sizeStats.winRatio] / curItem[propRefHeight],
+        rateWinWidth = viewWidth * WIN_RATIO[stats.winRatio] / curItem[propRefWidth],
+        rateWinHeight = viewHeight * WIN_RATIO[stats.winRatio] / curItem[propRefHeight],
         rate = Math.min(rateWinWidth, rateWinHeight);
-      if (sizeStats.avoidEnlarge && rate > 1) { rate = 1; }
+      if (stats.avoidEnlarge && rate > 1) { rate = 1; }
       sizeProps.width = sizeProps[`bBox_${propRefWidth}`] = `${curItem.width * rate}px`;
-      // sizeProps.objectFit = sizeStats.avoidEnlarge ? 'scale-down' : 'contain';
+      // sizeProps.objectFit = stats.avoidEnlarge ? 'scale-down' : 'contain';
     }
 
     // $img
@@ -269,7 +263,7 @@ window.addEventListener('load', () => {
         layoutTimer = setTimeout(() => {
           $body.css('display', '');
           initViewSize();
-          setImgSize(forceStats, true);
+          setImgSize(true);
         }, LAZY_LAYOUT_TIME); // bug? interval is needed.
       } else if (!dontInitViewSize) {
         initViewSize();
@@ -444,7 +438,7 @@ window.addEventListener('load', () => {
       $img.on('load error', event => {
         if ($img.attr('src') !== curItem.url && !curItem.error) { return; }
         nextAutoTask(); // Cancel task
-        $img.css('visibility', '');
+        $body.plainOverlay('scrollLeft', 0).plainOverlay('scrollTop', 0);
 
         if (event.type === 'error') {
           if (curItem.error) { window.close(); } // App might be broken.
@@ -473,29 +467,19 @@ window.addEventListener('load', () => {
 
         ui.setTitle(
           `${curItem.fileNum}/${curItem.filesLen} - ${curItem.label} - ${META.winTitle.view}`);
-        updateRotate(0, true);
-        updateSize(stats.forceImgRatio);
 
         $body.one('plainoverlayhide', () => {
-          // plainOverlay disables scroll bars.
-          if (!curImgRatioEnabled && stats.winRatioBase !== 'none') {
-            setTimeout(() => {
-              initViewSize();
-              setImgSize(null, true);
-              if (stats.auto) { nextAutoTask(forward); }
-            }, LAZY_LAYOUT_TIME);
-          } else if (stats.auto) {
-            nextAutoTask(forward);
-          }
+          initViewSize();
+          updateRotate(0, true);
+          updateSize(stats.forceImgRatio);
+          if (stats.auto) { nextAutoTask(forward); }
         });
-        busy(false);
+        busy(false, true);
       });
     }
 
     if (curItem && curItem.url === item.url) { return; }
     nextAutoTask(); // Cancel task
-    $img.css('visibility', 'hidden');
-    $window.scrollLeft(0).scrollTop(0); // Before plainOverlay#show
     busy(true);
 
     curItem = item;
@@ -852,7 +836,7 @@ window.addEventListener('load', () => {
     initViewSize();
     if (curItem && !curImgRatioEnabled && stats.winRatioBase !== 'none') {
       // Make `setImgSize` adjust it at only the end of resizing.
-      setImgSize(null, true, true);
+      setImgSize(true, true);
       clearTimeout(layoutTimer);
       layoutTimer = setTimeout(() => { setImgSize(); }, LAZY_LAYOUT_TIME);
     }
