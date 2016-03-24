@@ -23,7 +23,7 @@ const $ = window.$ || window.jQuery,
 
 var
   items = [], selectedItem, onItemSelected, lines, // lines[y][x] = item
-  thumbSize = 200, listView = false, showPath = false, keyDisabled = false, sortBy,
+  thumbSize = 200, listView = false, showInfo = false, keyDisabled = false, sortBy,
   viewWidth, viewHeight, resizeTimer,
   $container, $window, $body, elmView;
 
@@ -238,9 +238,9 @@ CatalogItem.setViewType = list => {
   (selectedItem || items[0]).select(); // to scroll.
 };
 
-CatalogItem.setShowPath = show => {
-  showPath = show;
-  $container[showPath ? 'addClass' : 'removeClass']('show-path');
+CatalogItem.setShowInfo = show => {
+  showInfo = show;
+  $container[showInfo ? 'addClass' : 'removeClass']('show-info');
 };
 
 CatalogItem.clear = () => {
@@ -308,7 +308,7 @@ CatalogItem.sort = (key, desc, ignoreView) => {
   return sortBy;
 };
 
-CatalogItem.sortByReset = () => {
+CatalogItem.resetSortBy = () => {
   sortBy = JSON.parse(JSON.stringify(DEFAULT_SORT_BY));
   return sortBy;
 };
@@ -489,7 +489,7 @@ CatalogItem.init = ($itemsContainer, $documentBody, $documentWindow) => {
   });
 };
 
-CatalogItem.sortByReset();
+CatalogItem.resetSortBy();
 Object.defineProperty(CatalogItem, 'items', {get: () => items});
 Object.defineProperty(CatalogItem, 'sortBy',
   {get: () => sortBy, set: newSortBy => { sortBy = newSortBy; }});

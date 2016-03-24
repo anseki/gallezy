@@ -145,22 +145,22 @@ window.addEventListener('load', () => {
     if (listView !== stats.listView) {
       CatalogItem.setViewType((stats.listView = listView));
       if (!byMenuValue) { $body.contextMenuCommon('value', 'listView', listView); }
-      commandDisabled.thumbSize = commandDisabled.showPath = listView;
+      commandDisabled.thumbSize = commandDisabled.showInfo = listView;
     }
     return stats.listView;
   }
 
   /**
-   * @param {boolean} showPath - show path or not.
+   * @param {boolean} showInfo - show path or not.
    * @param {boolean} [byMenuValue] - Don't update value of menu.
-   * @returns {boolean} showPath
+   * @returns {boolean} showInfo
    */
-  function updateShowPath(showPath, byMenuValue) {
-    if (showPath !== stats.showPath) {
-      CatalogItem.setShowPath((stats.showPath = showPath));
-      if (!byMenuValue) { $body.contextMenuCommon('value', 'showPath', showPath); }
+  function updateShowInfo(showInfo, byMenuValue) {
+    if (showInfo !== stats.showInfo) {
+      CatalogItem.setShowInfo((stats.showInfo = showInfo));
+      if (!byMenuValue) { $body.contextMenuCommon('value', 'showInfo', showInfo); }
     }
-    return stats.showPath;
+    return stats.showInfo;
   }
 
   /**
@@ -380,12 +380,12 @@ window.addEventListener('load', () => {
         s01: {type: 'cm_seperator'}
       }
     },
-    showPath: {
+    showInfo: {
       type: 'checkbox',
-      label: 'Show File Path',
-      callback: () => { updateShowPath($body.contextMenuCommon('value', 'showPath'), true); },
-      disabled: () => commandDisabled.showPath || !CatalogItem.items.length,
-      accesskey: 'p'
+      label: 'Show Image Information',
+      callback: () => { updateShowInfo($body.contextMenuCommon('value', 'showInfo'), true); },
+      disabled: () => commandDisabled.showInfo || !CatalogItem.items.length,
+      accesskey: 'i'
     },
     s02: {type: 'cm_seperator'},
     theme: {
@@ -463,11 +463,11 @@ window.addEventListener('load', () => {
     };
   });
   menuItems.sort.items.s02 = {type: 'cm_seperator'};
-  menuItems.sort.items.sortByReset = {
+  menuItems.sort.items.resetSortBy = {
     label: 'Reset',
     callback: () => {
       var desc0;
-      stats.sortBy = CatalogItem.sortByReset();
+      stats.sortBy = CatalogItem.resetSortBy();
       // Update menu forcibly
       desc0 = stats.sortBy[0].desc;
       stats.sortBy[0].desc = !desc0;
@@ -514,8 +514,8 @@ window.addEventListener('load', () => {
         rawStats.thumbSize : DEFAULT_THUMB_SIZE);
     stats.listView = updateViewType(
       typeof rawStats.listView === 'boolean' ? rawStats.listView : false);
-    stats.showPath = updateShowPath(
-      typeof rawStats.showPath === 'boolean' ? rawStats.showPath : false);
+    stats.showInfo = updateShowInfo(
+      typeof rawStats.showInfo === 'boolean' ? rawStats.showInfo : false);
     stats.theme = updateTheme(
       typeof rawStats.theme === 'number' && THEME_CLASS[rawStats.theme] ?
         rawStats.theme : DEFAULT_THEME_CLASS);

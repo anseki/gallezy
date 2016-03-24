@@ -66,7 +66,7 @@ $item-border-width: 3px;
     .info { display: none; }
   }
 
-  #container:not(.list).show-path & .label {
+  #container:not(.list).show-info & .label {
     // display: block;
     transform: translateY(0);
   }

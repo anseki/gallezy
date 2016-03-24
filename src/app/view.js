@@ -391,16 +391,16 @@ window.addEventListener('load', () => {
   }
 
   /**
-   * @param {boolean} showPath - show path or not.
+   * @param {boolean} showInfo - show path or not.
    * @param {boolean} [byMenuValue] - Don't update value of menu.
-   * @returns {boolean} showPath
+   * @returns {boolean} showInfo
    */
-  // function updateShowPath(showPath, byMenuValue) {
-  //   if (showPath !== stats.showPath) {
-  //     CatalogItem.setShowPath((stats.showPath = showPath));
-  //     if (!byMenuValue) { $container.contextMenuCommon('value', 'showPath', showPath); }
+  // function updateShowInfo(showInfo, byMenuValue) {
+  //   if (showInfo !== stats.showInfo) {
+  //     CatalogItem.setShowInfo((stats.showInfo = showInfo));
+  //     if (!byMenuValue) { $container.contextMenuCommon('value', 'showInfo', showInfo); }
   //   }
-  //   return stats.showPath;
+  //   return stats.showInfo;
   // }
 
   /**
@@ -623,10 +623,10 @@ window.addEventListener('load', () => {
       disabled: () => !curItem || !curItem.finished,
       accesskey: 'r'
     },
-    showPath: {
+    showInfo: {
       type: 'checkbox',
       label: 'Show File Path',
-      // callback: () => { updateShowPath($container.contextMenuCommon('value', 'showPath'), true); },
+      // callback: () => { updateShowInfo($container.contextMenuCommon('value', 'showInfo'), true); },
       disabled: () => !curItem || !curItem.finished,
       accesskey: 'xxx'
     },
@@ -832,8 +832,8 @@ window.addEventListener('load', () => {
       typeof rawStats.autoInterval === 'number' && AUTO_INTERVAL[rawStats.autoInterval] ?
         rawStats.autoInterval : DEFAULT_AUTO_INTERVAL);
 
-    // stats.showPath = updateShowPath(
-    //   typeof rawStats.showPath === 'boolean' ? rawStats.showPath : false);
+    // stats.showInfo = updateShowInfo(
+    //   typeof rawStats.showInfo === 'boolean' ? rawStats.showInfo : false);
     stats.theme = updateTheme(
       typeof rawStats.theme === 'number' && THEME_CLASS[rawStats.theme] ?
         rawStats.theme : DEFAULT_THEME_CLASS);
