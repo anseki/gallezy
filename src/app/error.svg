@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130" width="100" height="130">
+  <g fill="rgba(141, 141, 141, 0.5)">
+    <path d="M100,70 v-40 h-30 v-30 h-70 v70 l15,-10 l20,20 l10,-25 l20,20 l20,-10 z"/>
+    <path d="M73,0 v27 h27 z"/>
+    <path d="M100,75 v55 h-100 v-55 l15,-10 l21,21 l10,-25 l20,20 l20,-10 z"/>
+  </g>
+</svg>

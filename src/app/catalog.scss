@@ -1,0 +1,133 @@
+@import "compass";
+@import "common";
+@import "theme";
+
+$item-border-width: 3px;
+
+#container.list { // Avoid added margin by children's margin.
+  box-sizing: border-box;
+  padding: 1px;
+}
+
+.item {
+  border: $item-border-width solid transparent;
+  &.selected { border-color: $hl-color; }
+
+  position: relative;
+
+  &.loading img {
+    position: absolute;
+    left: 110%;
+  }
+
+  .label {
+    line-height: 1;
+    cursor: pointer;
+    @include font-rem-by-px(16);
+    word-break: break-all;
+  }
+
+  #container:not(.list) & {
+    display: inline-block;
+    margin: 10px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      cursor: pointer;
+    }
+
+    &.loading img {
+      width: auto;
+      height: auto;
+    }
+
+    .label {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      box-sizing: border-box;
+      width: 100%;
+      padding: 2px;
+      &.small { @include font-rem-by-px(11); }
+
+      // display: none;
+      transition: transform 0.08s linear 0s;
+      transform: translateY(100%);
+    }
+
+    &:hover .label {
+      // display: block;
+      transform: translateY(0);
+    }
+
+    .info { display: none; }
+  }
+
+  #container:not(.list).show-path & .label {
+    // display: block;
+    transform: translateY(0);
+  }
+
+  #container.list & {
+    display: flex;
+    margin: $item-border-width;
+
+    img { display: none; }
+    &.loading img { display: block; }
+
+    .label {
+      flex-grow: 1;
+      min-width: 5ch;
+
+      padding: 2px 0 5px 2px;
+      border-bottom: 1px solid;
+
+      white-space: pre-wrap;
+      // word-break: break-word; // doesn't work with `flex`?
+    }
+
+    .info {
+      cursor: pointer;
+
+      border-bottom: 1px solid;
+      // border-left: 1px solid;
+      @include font-rem-by-px(12.8);
+      white-space: nowrap;
+
+      padding: 0.5ex 2ch 0 2px;
+      &:last-of-type { padding-right: 2px; }
+
+      & > span { display: inline-block; }
+
+      &.size {
+        & span:nth-of-type(1) {
+          min-width: 3ch;
+          text-align: right;
+        }
+        & span:nth-of-type(2) { min-width: 2ch; /* from bytesToString() */ }
+        & span:nth-of-type(3) { min-width: 2ch; }
+      }
+
+      &.area {
+        & span {
+          text-align: right;
+          &:nth-of-type(1) { min-width: 7ch; }
+          &:nth-of-type(2) { min-width: 8ch; }
+        }
+      }
+    }
+  }
+}
+
+#empty {
+  padding-top: 120px;
+  color: #8e8e8e;
+  text-align: center;
+  cursor: default;
+  @include font-rem-by-px(18);
+  @media screen and (min-width: 480px) { @include font-rem-by-px(22); }
+  @media screen and (min-width: 768px) { @include font-rem-by-px(32); }
+}

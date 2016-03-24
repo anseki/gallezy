@@ -1,0 +1,58 @@
+@import "compass";
+@import "common";
+@import "theme";
+
+#container {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#bound-box {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: inline-block;
+  line-height: 0;
+  position: relative; // for `overflow:hidden` with `img{position:absolute}`
+
+  img {
+    position: absolute;
+    top: -100%;
+    right: -100%;
+    bottom: -100%;
+    left: -100%;
+    margin: auto;
+  }
+}
+
+#panel {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+#info {
+  display: flex;
+  align-items: flex-end;
+
+  & > div {
+    @include font-rem-by-px(12.8);
+    white-space: nowrap;
+    padding: 2px 2ch 2px 2px;
+    &:last-of-type { padding-right: 2px; }
+  }
+
+  #label {
+    flex-grow: 1;
+    min-width: 5ch;
+    padding: 2px;
+    line-height: 1;
+    @include font-rem-by-px(16);
+    word-break: break-all;
+    white-space: pre-wrap;
+    // word-break: break-word; // doesn't work with `flex`?
+
+  }
+}

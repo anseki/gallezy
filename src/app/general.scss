@@ -1,0 +1,33 @@
+@import "compass";
+@import "common";
+
+@include font-sizing-rem;
+
+html,
+body { height: 100%; }
+
+body {
+  @include user-select(none);
+  margin: 0;
+
+  /* stylelint-disable value-list-comma-newline-after, comment-empty-line-before  */
+  font-family:
+    Verdana, Helvetica, Arial,
+    // ja
+    "Meiryo UI", "Meiryo", "Hiragino Kaku Gothic Pro", "HiraKakuProN-W3",
+    // ko
+    "Malgun Gothic", "Gulim", "Apple Gothic",
+    // zh-CN
+    "Microsoft Yahei", "PingHei", "SimSun", "Song",
+    // zh-TW
+    "PMingLiU", "Apple LiSung",
+    // ar
+    "Simplified Arabic", "Lucid Grande",
+    // generic
+    sans-serif;
+  /* stylelint-enable value-list-comma-newline-after, comment-empty-line-before */
+}
+
+.context-menu-list {
+  @include font-rem-by-px(16);
+}

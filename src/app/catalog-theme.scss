@@ -1,0 +1,35 @@
+@import "theme";
+
+body.dark {
+  #container:not(.list) .item {
+    .label {
+      color: $dark-img-label-color;
+      background-color: rgba($dark-background-color, 0.8);
+    }
+  }
+
+  #container.list .item {
+    .label { color: $dark-label-color; }
+    .info { color: $dark-info-color; }
+
+    .label,
+    .info { border-bottom-color: $dark-label-border-color; }
+  }
+}
+
+body.light {
+  #container:not(.list) .item {
+    .label {
+      color: $light-img-label-color;
+      background-color: rgba($light-background-color, 0.8);
+    }
+  }
+
+  #container.list .item {
+    .label { color: $light-label-color; }
+    .info { color: $light-info-color; }
+
+    .label,
+    .info { border-bottom-color: $light-label-border-color; }
+  }
+}
