@@ -144,16 +144,16 @@ window.addEventListener('load', () => {
   }
 
   function hideMenu() {
-    if (menuShown) { $container.contextMenuCommon('hide'); }
+    if (menuShown) { $body.contextMenuCommon('hide'); }
   }
 
-  function busy(bOn) {
+  function busy(bOn, ignoreComplete) {
     var op = (bOn = !!bOn) ? 'show' : 'hide';
     if (bOn !== isBusyOn) {
       isBusyOn = bOn;
       if (isBusyOn) { hideMenu(); scroll(false); }
-      $container.contextMenuCommon(!isBusyOn); // true: enable, false: disable
-      $body.plainOverlay(op);
+      $body.contextMenuCommon(!isBusyOn) // true: enable, false: disable
+        .plainOverlay(op, isBusyOn ? null : ignoreComplete);
     }
   }
 
@@ -308,8 +308,8 @@ window.addEventListener('load', () => {
         curImgRatioEnabled = imgRatioEnabled;
         stats.imgRatio = size;
         if (!byMenuValue) {
-          $container.contextMenuCommon('value', 'imgRatioEnabled', curImgRatioEnabled);
-          $container.contextMenuCommon('value', 'imgRatio', size);
+          $body.contextMenuCommon('value', 'imgRatioEnabled', curImgRatioEnabled);
+          $body.contextMenuCommon('value', 'imgRatio', size);
         }
         commandDisabled.imgRatioUp = size >= IMG_RATIO.length - 1;
         commandDisabled.imgRatioDown = size <= 0;
@@ -330,10 +330,10 @@ window.addEventListener('load', () => {
         stats.winRatioBase = winRatioBase;
         stats.avoidEnlarge = avoidEnlarge;
         if (!byMenuValue) {
-          $container.contextMenuCommon('value', 'imgRatioEnabled', curImgRatioEnabled);
-          $container.contextMenuCommon('value', 'winRatio', size);
-          $container.contextMenuCommon('value', 'winRatioBase', winRatioBase);
-          $container.contextMenuCommon('value', 'avoidEnlarge', avoidEnlarge);
+          $body.contextMenuCommon('value', 'imgRatioEnabled', curImgRatioEnabled);
+          $body.contextMenuCommon('value', 'winRatio', size);
+          $body.contextMenuCommon('value', 'winRatioBase', winRatioBase);
+          $body.contextMenuCommon('value', 'avoidEnlarge', avoidEnlarge);
         }
         commandDisabled.winRatio = false;
         commandDisabled.winRatioScale = winRatioBase === 'none';
@@ -365,7 +365,7 @@ window.addEventListener('load', () => {
     if (auto !== stats.auto) {
       stats.auto = auto;
       nextAutoTask(auto && !scrolling ? forward : null);
-      if (!byMenuValue) { $container.contextMenuCommon('value', 'auto', auto); }
+      if (!byMenuValue) { $body.contextMenuCommon('value', 'auto', auto); }
       commandDisabled.autoInterval = !auto;
     }
     return stats.auto;
@@ -385,7 +385,7 @@ window.addEventListener('load', () => {
 
     if (autoInterval !== stats.autoInterval) {
       stats.autoInterval = autoInterval;
-      if (!byMenuValue) { $container.contextMenuCommon('value', 'autoInterval', autoInterval); }
+      if (!byMenuValue) { $body.contextMenuCommon('value', 'autoInterval', autoInterval); }
     }
     return stats.autoInterval;
   }
@@ -398,7 +398,7 @@ window.addEventListener('load', () => {
   // function updateShowInfo(showInfo, byMenuValue) {
   //   if (showInfo !== stats.showInfo) {
   //     CatalogItem.setShowInfo((stats.showInfo = showInfo));
-  //     if (!byMenuValue) { $container.contextMenuCommon('value', 'showInfo', showInfo); }
+  //     if (!byMenuValue) { $body.contextMenuCommon('value', 'showInfo', showInfo); }
   //   }
   //   return stats.showInfo;
   // }
@@ -418,7 +418,7 @@ window.addEventListener('load', () => {
     if (theme !== stats.theme) {
       if (THEME_CLASS[stats.theme]) { $body.removeClass(THEME_CLASS[stats.theme]); }
       $body.addClass(THEME_CLASS[(stats.theme = theme)]);
-      if (!byMenuValue) { $container.contextMenuCommon('value', 'theme', theme); }
+      if (!byMenuValue) { $body.contextMenuCommon('value', 'theme', theme); }
     }
     return stats.theme;
   }
@@ -433,7 +433,7 @@ window.addEventListener('load', () => {
     if (fullScreen == null) { fullScreen = !curFullScreen; } // eslint-disable-line eqeqeq
     if (fullScreen !== curFullScreen) {
       ui.setFullScreen(fullScreen);
-      if (!byMenuValue) { $container.contextMenuCommon('value', 'fullScreen', fullScreen); }
+      if (!byMenuValue) { $body.contextMenuCommon('value', 'fullScreen', fullScreen); }
     }
     return fullScreen;
   }
@@ -532,11 +532,11 @@ window.addEventListener('load', () => {
     },
     auto: {
       eventMatch: event => event.which === 32 && !event.altKey && event.ctrlKey && event.shiftKey,
-      handle: () => { updateAuto(!$container.contextMenuCommon('value', 'auto')); }
+      handle: () => { updateAuto(!$body.contextMenuCommon('value', 'auto')); }
     },
     imgRatioEnabled: {
       eventMatch: event => event.which === 96 && !event.modKey,
-      handle: () => { updateSize(!$container.contextMenuCommon('value', 'imgRatioEnabled')); },
+      handle: () => { updateSize(!$body.contextMenuCommon('value', 'imgRatioEnabled')); },
       disabled: () => !curItem || !curItem.finished
     },
     imgRatioUp: {
@@ -571,7 +571,7 @@ window.addEventListener('load', () => {
     menu: {
       eventMatch: event => event.which === 112 && !event.modKey,
       handle: () => {
-        $container.contextMenuCommon({x: $window.scrollLeft() + 20, y: $window.scrollTop() + 20});
+        $body.contextMenuCommon({x: $window.scrollLeft() + 20, y: $window.scrollTop() + 20});
       }
     }
   };
@@ -603,7 +603,7 @@ window.addEventListener('load', () => {
       type: 'checkbox',
       label: [$('<span title="Start scrolling and change to next image automatically.">' +
         'Auto<span class="context-menu-accesskey">m</span>atic</span>'), 'Ctrl+Shift+Space'],
-      callback: () => { updateAuto($container.contextMenuCommon('value', 'auto'), true); },
+      callback: () => { updateAuto($body.contextMenuCommon('value', 'auto'), true); },
       accesskey: 'm'
     },
     autoInterval: {
@@ -626,7 +626,7 @@ window.addEventListener('load', () => {
     showInfo: {
       type: 'checkbox',
       label: 'Show File Path',
-      // callback: () => { updateShowInfo($container.contextMenuCommon('value', 'showInfo'), true); },
+      // callback: () => { updateShowInfo($body.contextMenuCommon('value', 'showInfo'), true); },
       disabled: () => !curItem || !curItem.finished,
       accesskey: 'xxx'
     },
@@ -640,7 +640,7 @@ window.addEventListener('load', () => {
       type: 'checkbox',
       label: ['Full Screen', 'F11'],
       callback: () => {
-        updateFullScreen($container.contextMenuCommon('value', 'fullScreen'), true);
+        updateFullScreen($body.contextMenuCommon('value', 'fullScreen'), true);
       },
       checked: ui.isFullScreen(),
       accesskey: 'f'
@@ -674,7 +674,7 @@ window.addEventListener('load', () => {
       value: key,
       label: WIN_RATIO_BASE_LABEL[key],
       callback: () => {
-        updateSize(false, null, $container.contextMenuCommon('value', 'winRatioBase'), null, true);
+        updateSize(false, null, $body.contextMenuCommon('value', 'winRatioBase'), null, true);
       },
       disabled: () => commandDisabled.winRatio || !curItem || !curItem.finished
     };
@@ -697,7 +697,7 @@ window.addEventListener('load', () => {
     type: 'checkbox',
     label: 'Don\'t Enlarge',
     callback: () => {
-      updateSize(false, null, null, $container.contextMenuCommon('value', 'avoidEnlarge'), true);
+      updateSize(false, null, null, $body.contextMenuCommon('value', 'avoidEnlarge'), true);
     },
     disabled: () => commandDisabled.winRatio || commandDisabled.winRatioScale ||
       !curItem || !curItem.finished
@@ -708,7 +708,7 @@ window.addEventListener('load', () => {
     type: 'checkbox',
     label: ['Specific Scale', '0'],
     callback: () => {
-      updateSize($container.contextMenuCommon('value', 'imgRatioEnabled'), null, null, null, true);
+      updateSize($body.contextMenuCommon('value', 'imgRatioEnabled'), null, null, null, true);
     },
     disabled: () => !curItem || !curItem.finished,
     accesskey: 'c'
@@ -757,7 +757,7 @@ window.addEventListener('load', () => {
     label: $('<span title="[Specific Scale] is used for other images also if this checkbox' +
       ' is checked.">Use this Scale <span class="context-menu-accesskey">A</span>lways</span>'),
     callback: () => {
-      stats.forceImgRatio = $container.contextMenuCommon('value', 'forceImgRatio');
+      stats.forceImgRatio = $body.contextMenuCommon('value', 'forceImgRatio');
     },
     disabled: () => !curItem || !curItem.finished,
     accesskey: 'a'
@@ -800,7 +800,7 @@ window.addEventListener('load', () => {
   });
 
   $.contextMenuCommon({
-    selector: '#container',
+    selector: 'body',
     items: menuItems,
     events: {
       show: () => { menuShown = true; },
@@ -824,7 +824,7 @@ window.addEventListener('load', () => {
     curImgRatioEnabled = null; // force update
     updateSize(!stats.forceImgRatio); // And `updateSize(stats.forceImgRatio)` is called by 1st `open`
     // Update menu
-    $container.contextMenuCommon('value', 'forceImgRatio', stats.forceImgRatio);
+    $body.contextMenuCommon('value', 'forceImgRatio', stats.forceImgRatio);
 
     stats.auto = updateAuto(typeof rawStats.auto === 'boolean' ? rawStats.auto : false);
     nextAutoTask(); // Cancel task
