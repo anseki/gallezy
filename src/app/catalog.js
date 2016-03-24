@@ -55,14 +55,14 @@ window.addEventListener('load', () => {
     });
   }
 
-  function busy(bOn) {
+  function busy(bOn, ignoreComplete) {
     var op = (bOn = !!bOn) ? 'show' : 'hide';
     if (bOn !== isBusyOn) {
       isBusyOn = bOn;
       if (isBusyOn) { hideMenu(); }
       CatalogItem.keyDisabled(isBusyOn);
       $body.contextMenuCommon(!isBusyOn) // true: enable, false: disable
-        .plainOverlay(op);
+        .plainOverlay(op, isBusyOn ? null : ignoreComplete);
     }
   }
 
@@ -225,12 +225,12 @@ window.addEventListener('load', () => {
         }
         ui.setTitle(`${files.length} file${files.length > 1 ? 's' : ''} - ${path}` +
           ` - ${META.winTitle.catalog}`);
+
+        // Since `clear` make selected item be null, `addFiles` select 1st item.
+        $body.plainOverlay('scrollLeft', 0).plainOverlay('scrollTop', 0); // before clear
         CatalogItem.clear();
-        // Property is kept even if `CatalogItem.clear() > empty()` was done.
-        $body.one('plainoverlayhide', () => {
-          $window.scrollLeft(0).scrollTop(0);
-        });
-        CatalogItem.addFiles(files, path, () => { busy(false); });
+        CatalogItem.addFiles(files, path, true, () => { busy(false); });
+
         stats.lastPath = path;
       },
       stats => stats.isFile() && FILE_EXTS.indexOf(stats.extension.toLowerCase()) > -1);

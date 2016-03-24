@@ -254,7 +254,7 @@ CatalogItem.clear = () => {
   selectedItem = null;
 };
 
-CatalogItem.addFiles = (files, basePath, cbDone) => {
+CatalogItem.addFiles = (files, basePath, ignoreView, cbDone) => {
   var i = -1, loadingItems = 0, iMax;
 
   function loadItems() {
@@ -262,7 +262,7 @@ CatalogItem.addFiles = (files, basePath, cbDone) => {
     function itemLoaded() {
       if (--loadingItems <= 0) {
         if (i >= iMax) {
-          CatalogItem.sort();
+          CatalogItem.sort(null, null, ignoreView);
           cbDone();
         } else {
           loadItems();
@@ -282,7 +282,7 @@ CatalogItem.addFiles = (files, basePath, cbDone) => {
   loadItems();
 };
 
-CatalogItem.sort = (key, desc) => {
+CatalogItem.sort = (key, desc, ignoreView) => {
   if (key != null) { // eslint-disable-line eqeqeq
     sortBy = sortBy.reduce((sortBy, keyOrder) => {
       if (keyOrder.key !== key) { sortBy.push(keyOrder); }
@@ -304,7 +304,7 @@ CatalogItem.sort = (key, desc) => {
   items.forEach(item => { item.$elm.appendTo($container); });
 
   updateBBox();
-  (selectedItem || items[0]).select(); // to scroll.
+  (selectedItem || items[0]).select(ignoreView); // to scroll.
   return sortBy;
 };
 
