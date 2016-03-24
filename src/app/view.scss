@@ -23,6 +23,10 @@
     bottom: -100%;
     left: -100%;
     margin: auto;
+
+    #container:not(.effect-disabled) & {
+      transition: transform 0.2s linear;
+    }
   }
 }
 

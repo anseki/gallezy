@@ -54,7 +54,7 @@ $item-border-width: 3px;
       &.small { @include font-rem-by-px(11); }
 
       // display: none;
-      transition: transform 0.08s linear 0s;
+      transition: transform 0.08s linear;
       transform: translateY(100%);
     }
 

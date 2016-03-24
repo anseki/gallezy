@@ -223,6 +223,7 @@ window.addEventListener('load', () => {
           busy(false);
           return;
         }
+
         ui.setTitle(`${files.length} file${files.length > 1 ? 's' : ''} - ${path}` +
           ` - ${META.winTitle.catalog}`);
 

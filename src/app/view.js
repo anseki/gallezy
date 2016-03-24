@@ -45,7 +45,7 @@ window.addEventListener('load', () => {
     $area = $('#area'), $size = $('#size'), $mtime = $('#mtime'),
     isBusyOn = false, menuShown = false,
     stats = {}, commands, menuItems, commandDisabled = {},
-    curImgRatioEnabled = false, curRotate, curSizeProps = {},
+    curImgRatioEnabled = false, curRotate, lastRotate, rotate360, curSizeProps = {},
     scrolling, scrollSpeed, scrollSpeedShift, lastShift, scrollTimer, curScrollLeft, curScrollTop,
     autoTimer,
 
@@ -161,9 +161,10 @@ window.addEventListener('load', () => {
    * Set CSS props based on current `stats`, `curImgRatioEnabled` and `curRotate`.
    * @param {boolean|null} dontFix - Avoid adjusting for scroll bar.
    * @param {boolean|null} dontInitViewSize - `dontFix` must be `true`, aboid call `initViewSize`.
+   * @param {boolean|null} disableEffect - Disable rotate effect.
    * @returns {void}
    */
-  function setImgSize(dontFix, dontInitViewSize) {
+  function setImgSize(dontFix, dontInitViewSize, disableEffect) {
 
     // [obj.A, obj.B] = [obj.B, obj.A];
     function exchangeProps(obj, propA, propB) {
@@ -230,6 +231,33 @@ window.addEventListener('load', () => {
           }
           return props;
         }, {}))).length) {
+
+      if (updateProps.transform) {
+        if (disableEffect) {
+          $container.addClass('effect-disabled');
+          setTimeout(() => { $container.removeClass('effect-disabled'); }, LAZY_LAYOUT_TIME);
+        } else {
+          // rotate 270 > 0 replace 270 > 360
+          if (rotate360 == null) { // eslint-disable-line eqeqeq
+            $img.on('transitionend', event => {
+              if (event.originalEvent.propertyName === 'transform' && rotate360) {
+                $container.addClass('effect-disabled');
+                $img.css('transform', 'none');
+                rotate360 = false;
+                setTimeout(() => { $container.removeClass('effect-disabled'); }, LAZY_LAYOUT_TIME);
+              }
+            });
+          }
+          if (lastRotate === 270 && !curRotate) {
+            updateProps.transform = 'rotate(360deg)';
+            rotate360 = true;
+          } else {
+            rotate360 = false;
+          }
+        }
+        lastRotate = curRotate;
+      }
+
       $img.css(updateProps);
     }
     // bBoxPad
@@ -241,7 +269,7 @@ window.addEventListener('load', () => {
       bBoxPad.setAttribute('width', sizeProps.unscaleWidth);
       bBoxPad.setAttribute('height', sizeProps.unscaleHeight);
       // force reflow, for width/height: `auto`.
-      if (!dontFix) { $body.css('display', 'none'); }
+      if (!dontFix) { $bBoxPad.css('display', 'none'); }
       viewResized = true;
     }
     // $bBoxPad
@@ -261,7 +289,7 @@ window.addEventListener('load', () => {
       if (!dontFix) {
         clearTimeout(layoutTimer);
         layoutTimer = setTimeout(() => {
-          $body.css('display', '');
+          $bBoxPad.css('display', '');
           initViewSize();
           setImgSize(true);
         }, LAZY_LAYOUT_TIME); // bug? interval is needed.
@@ -276,10 +304,11 @@ window.addEventListener('load', () => {
    * @param {number|boolean|null} size - true: ratio-up, false: ratio-down, number: ratio-index
    * @param {string|null} winRatioBase - (winRatio-MODE only) Key of winRatioBase.
    * @param {boolean|null} avoidEnlarge - (winRatio-MODE only) Don't up scale.
-   * @param {boolean} [byMenuValue] - Don't update value of menu.
+   * @param {boolean|null} byMenuValue - Don't update value of menu.
+   * @param {boolean|null} disableEffect - Disable rotate effect.
    * @returns {number} size - imgRatio or winRatio
    */
-  function updateSize(imgRatioEnabled, size, winRatioBase, avoidEnlarge, byMenuValue) {
+  function updateSize(imgRatioEnabled, size, winRatioBase, avoidEnlarge, byMenuValue, disableEffect) {
     /*
       Target values by mode:
         !imgRatioEnabled  : winRatio, winRatioBase, avoidEnlarge
@@ -334,7 +363,7 @@ window.addEventListener('load', () => {
       }
     }
 
-    if (curItem) { setImgSize(); }
+    if (curItem) { setImgSize(null, null, disableEffect); }
 
     return curImgRatioEnabled ? stats.imgRatio : stats.winRatio;
   }
@@ -471,7 +500,7 @@ window.addEventListener('load', () => {
         $body.one('plainoverlayhide', () => {
           initViewSize();
           updateRotate(0, true);
-          updateSize(stats.forceImgRatio);
+          updateSize(stats.forceImgRatio, null, null, null, null, true);
           if (stats.auto) { nextAutoTask(forward); }
         });
         busy(false, true);
