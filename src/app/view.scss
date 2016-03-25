@@ -30,11 +30,22 @@
   }
 }
 
-#panel {
+#panel-wrap {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
+  padding-top: 80px;
+}
+
+#panel {
+  transition: transform 0.08s linear;
+  transform: translateY(100%);
+
+  #panel-wrap:hover &,
+  &.show-info {
+    transform: translateY(0);
+  }
 }
 
 #info {
@@ -59,4 +70,9 @@
     // word-break: break-word; // doesn't work with `flex`?
 
   }
+}
+
+#progress-bar {
+  height: 5px;
+  background-color: $hl-color;
 }

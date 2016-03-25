@@ -1,15 +1,11 @@
 @import "theme";
 
 body.dark {
-  #info {
-    color: $dark-img-label-color;
-    background-color: rgba($dark-background-color, 0.8);
-  }
+  #panel { background-color: rgba($dark-background-color, 0.8); }
+  #info { color: $dark-img-label-color; }
 }
 
 body.light {
-  #info {
-    color: $light-img-label-color;
-    background-color: rgba($light-background-color, 0.8);
-  }
+  #panel { background-color: rgba($light-background-color, 0.8); }
+  #info { color: $light-img-label-color; }
 }

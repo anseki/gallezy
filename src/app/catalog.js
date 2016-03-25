@@ -383,7 +383,7 @@ window.addEventListener('load', () => {
     },
     showInfo: {
       type: 'checkbox',
-      label: 'Show Image Information',
+      label: 'Show Information',
       callback: () => { updateShowInfo($body.contextMenuCommon('value', 'showInfo'), true); },
       disabled: () => commandDisabled.showInfo || !CatalogItem.items.length,
       accesskey: 'i'

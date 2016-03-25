@@ -32,7 +32,7 @@ window.addEventListener('load', () => {
     SCROLL_MSPF = 1000 / 60/* FPS */,
     INIT_SCROLL_SPEED = 30/* px/sec */ / 1000 * SCROLL_MSPF, // px/frame
     INIT_SCROLL_SPEED_SHIFT = INIT_SCROLL_SPEED * 2,
-    DOUBLE_PRESS_INTERVAL = 800,
+    DOUBLE_PRESS_INTERVAL = 800, SHOW_INFO_TIME = 3000,
     ERROR_IMG_URL = './error.svg', ERROR_IMG_WIDTH = 100, ERROR_IMG_HEIGHT = 130;
 
   var ui = remote.getCurrentWindow(),
@@ -42,12 +42,12 @@ window.addEventListener('load', () => {
     $container = $('#container'), $img = $('img', $container),
     $bBoxPad = $('svg', '#bound-box'), bBoxPad = $bBoxPad.get(0),
     $panel = $('#panel'), $label = $('#label'),
-    $area = $('#area'), $size = $('#size'), $mtime = $('#mtime'),
+    $area = $('#area'), $size = $('#size'), $mtime = $('#mtime'), $progress = $('#progress-bar'),
     isBusyOn = false, menuShown = false,
     stats = {}, commands, menuItems, commandDisabled = {},
     curImgRatioEnabled = false, curRotate, curSizeProps = {},
     scrolling, scrollSpeed, scrollSpeedShift, lastShift, scrollTimer, curScrollLeft, curScrollTop,
-    autoTimer,
+    autoTimer, showInfoTimer,
 
     /**
      * @typedef {Object} curItem
@@ -451,13 +451,14 @@ window.addEventListener('load', () => {
    * @param {boolean} [byMenuValue] - Don't update value of menu.
    * @returns {boolean} showInfo
    */
-  // function updateShowInfo(showInfo, byMenuValue) {
-  //   if (showInfo !== stats.showInfo) {
-  //     CatalogItem.setShowInfo((stats.showInfo = showInfo));
-  //     if (!byMenuValue) { $body.contextMenuCommon('value', 'showInfo', showInfo); }
-  //   }
-  //   return stats.showInfo;
-  // }
+  function updateShowInfo(showInfo, byMenuValue) {
+    if (showInfo !== stats.showInfo) {
+      clearTimeout(showInfoTimer);
+      $panel[(stats.showInfo = showInfo) ? 'addClass' : 'removeClass']('show-info');
+      if (!byMenuValue) { $body.contextMenuCommon('value', 'showInfo', showInfo); }
+    }
+    return stats.showInfo;
+  }
 
   /**
    * @param {number} theme - theme index
@@ -495,6 +496,19 @@ window.addEventListener('load', () => {
   }
 
   function open(item) {
+    function setInfo() {
+      $label.text(`${curItem.fileNum}/${curItem.filesLen} - ${curItem.label}`);
+      $area.text(`${general.numToString(curItem.width)} x ${general.numToString(curItem.height)} px`);
+      {
+        let bytes = general.bytesToString(curItem.size, 1, true);
+        $size.text(`${bytes[0]} ${bytes[1]}`);
+        $size.attr('title', bytes[0] !== curItem.size ? `${general.numToString(curItem.size)} B` : '');
+      }
+      $mtime.text(general.dateToString(new Date(curItem.mtime)));
+      $progress.css('width', `${curItem.fileNum / curItem.filesLen * 100}%`);
+      ui.setTitle(`${curItem.fileNum}/${curItem.filesLen} - ${curItem.label} - ${META.winTitle.view}`);
+    }
+
     if (!open.setupImg) { // emulate static var
       $img.on('load error', event => {
         if ($img.attr('src') !== curItem.url && !curItem.error) { return; }
@@ -511,28 +525,22 @@ window.addEventListener('load', () => {
           curItem.loaded = true;
         }
         curItem.finished = true;
-
-        $label.text(`${curItem.fileNum}/${curItem.filesLen} - ${curItem.label}`);
-        $area.text(`${general.numToString(curItem.width)} x ${general.numToString(curItem.height)} px`);
-        {
-          let bytes = general.bytesToString(curItem.size, 1, true);
-          $size.text(`${bytes[0]} ${bytes[1]}`);
-          $size.attr('title', bytes[0] !== curItem.size ? `${general.numToString(curItem.size)} B` : '');
-        }
-        $mtime.text(general.dateToString(new Date(curItem.mtime)));
-
         if (curItem.error) {
           curItem.width = ERROR_IMG_WIDTH;
           curItem.height = ERROR_IMG_HEIGHT;
         }
 
-        ui.setTitle(
-          `${curItem.fileNum}/${curItem.filesLen} - ${curItem.label} - ${META.winTitle.view}`);
-
+        setInfo();
         $body.one('plainoverlayhide', () => {
           initViewSize();
           updateRotate(0, true);
           updateSize(stats.forceImgRatio, null, null, null, null, true);
+
+          if (!stats.showInfo) {
+            clearTimeout(showInfoTimer);
+            $panel.addClass('show-info');
+            showInfoTimer = setTimeout(() => { $panel.removeClass('show-info'); }, SHOW_INFO_TIME);
+          }
           if (stats.auto) { nextAutoTask(forward); }
         });
         busy(false, true);
@@ -540,7 +548,12 @@ window.addEventListener('load', () => {
       open.setupImg = true;
     }
 
-    if (curItem && curItem.url === item.url) { return; }
+    if (curItem && curItem.url === item.url) { // Update info
+      ['mtime', 'size', 'label', 'fileNum', 'filesLen']
+        .forEach(prop => { curItem[prop] = item[prop]; });
+      setInfo();
+      return;
+    }
     nextAutoTask(); // Cancel task
     busy(true);
     rotateController.finish();
@@ -672,10 +685,10 @@ window.addEventListener('load', () => {
     },
     showInfo: {
       type: 'checkbox',
-      label: 'Show File Path',
-      // callback: () => { updateShowInfo($body.contextMenuCommon('value', 'showInfo'), true); },
+      label: 'Show Information',
+      callback: () => { updateShowInfo($body.contextMenuCommon('value', 'showInfo'), true); },
       disabled: () => !curItem || !curItem.finished,
-      accesskey: 'xxx'
+      accesskey: 'i'
     },
     s03: {type: 'cm_seperator'},
     theme: {
@@ -879,8 +892,8 @@ window.addEventListener('load', () => {
       typeof rawStats.autoInterval === 'number' && AUTO_INTERVAL[rawStats.autoInterval] ?
         rawStats.autoInterval : DEFAULT_AUTO_INTERVAL);
 
-    // stats.showInfo = updateShowInfo(
-    //   typeof rawStats.showInfo === 'boolean' ? rawStats.showInfo : false);
+    stats.showInfo = updateShowInfo(
+      typeof rawStats.showInfo === 'boolean' ? rawStats.showInfo : false);
     stats.theme = updateTheme(
       typeof rawStats.theme === 'number' && THEME_CLASS[rawStats.theme] ?
         rawStats.theme : DEFAULT_THEME_CLASS);
