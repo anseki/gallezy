@@ -39,13 +39,13 @@ window.addEventListener('load', () => {
     $window = $(window), $body = $('body').plainOverlay(),
     elmView = document.querySelector('html'),
     viewWidth, viewHeight, viewScrollWidth, viewScrollHeight, layoutTimer,
-    $container = $('#container'), $img,
+    $container = $('#container'), $img = $('img', $container),
     $bBoxPad = $('svg', '#bound-box'), bBoxPad = $bBoxPad.get(0),
     $panel = $('#panel'), $label = $('#label'),
     $area = $('#area'), $size = $('#size'), $mtime = $('#mtime'),
     isBusyOn = false, menuShown = false,
     stats = {}, commands, menuItems, commandDisabled = {},
-    curImgRatioEnabled = false, curRotate, lastRotate, rotate360, curSizeProps = {},
+    curImgRatioEnabled = false, curRotate, curSizeProps = {},
     scrolling, scrollSpeed, scrollSpeedShift, lastShift, scrollTimer, curScrollLeft, curScrollTop,
     autoTimer,
 
@@ -64,7 +64,62 @@ window.addEventListener('load', () => {
      * @property {boolean} error - Image loading failed. (from catalog)
      * @property {boolean} finished - Image loading finished regardless of errors.
      */
-    curItem;
+    curItem,
+
+    rotateController = (() => {
+      var lastDeg, deg360, running;
+
+      // Update `transform` without effect.
+      function forceTransform(transform) {
+        $img.addClass('effect-disabled');
+        if (transform) { $img.css('transform', transform); }
+        $img.get(0).offsetWidth; /* force reflow */ // eslint-disable-line no-unused-expressions
+        $img.removeClass('effect-disabled');
+      }
+
+      $img.on('transitionend', event => {
+        if (event.originalEvent.propertyName === 'transform') {
+          if (deg360) {
+            forceTransform('none'); // reset
+            deg360 = false;
+          }
+          running = false;
+        }
+      });
+
+      return {
+        rotate: (deg, disableEffect) => {
+          if (disableEffect) {
+            forceTransform(deg ? `rotate(${deg}deg)` : 'none');
+            running = deg360 = false;
+          } else {
+            let transform;
+            rotateController.finish();
+            if (lastDeg === 270 && deg === 0) {
+              transform = 'rotate(360deg)'; // rotate 270 > 0 replace 270 > 360
+              deg360 = true;
+            } else {
+              transform = deg ? `rotate(${deg}deg)` : 'none';
+              deg360 = false;
+            }
+            $img.css('transform', transform);
+            running = true;
+          }
+          lastDeg = deg;
+        },
+
+        finish: () => {
+          if (!running) { return; }
+          if (deg360) {
+            forceTransform('none'); // reset
+            deg360 = false;
+          } else {
+            forceTransform();
+          }
+          running = false;
+        }
+      };
+    })();
 
   function nextAutoTask(cb) {
     clearTimeout(autoTimer);
@@ -231,33 +286,10 @@ window.addEventListener('load', () => {
           }
           return props;
         }, {}))).length) {
-
       if (updateProps.transform) {
-        if (disableEffect) {
-          $img.addClass('effect-disabled');
-          setTimeout(() => { $img.removeClass('effect-disabled'); }, LAZY_RENDER_TIME);
-        } else {
-          // rotate 270 > 0 replace 270 > 360
-          if (rotate360 == null) { // eslint-disable-line eqeqeq
-            $img.on('transitionend', event => {
-              if (event.originalEvent.propertyName === 'transform' && rotate360) {
-                $img.addClass('effect-disabled');
-                $img.css('transform', 'none');
-                rotate360 = false;
-                setTimeout(() => { $img.removeClass('effect-disabled'); }, LAZY_RENDER_TIME);
-              }
-            });
-          }
-          if (lastRotate === 270 && !curRotate) {
-            updateProps.transform = 'rotate(360deg)';
-            rotate360 = true;
-          } else {
-            rotate360 = false;
-          }
-        }
-        lastRotate = curRotate;
+        delete updateProps.transform; // This is used to detect changing.
+        rotateController.rotate(curRotate, disableEffect);
       }
-
       $img.css(updateProps);
     }
     // bBoxPad
@@ -462,8 +494,7 @@ window.addEventListener('load', () => {
   }
 
   function open(item) {
-    if (!$img) {
-      $img = $('img', $container);
+    if (!open.setupImg) { // emulate static var
       $img.on('load error', event => {
         if ($img.attr('src') !== curItem.url && !curItem.error) { return; }
         nextAutoTask(); // Cancel task
@@ -505,11 +536,13 @@ window.addEventListener('load', () => {
         });
         busy(false, true);
       });
+      open.setupImg = true;
     }
 
     if (curItem && curItem.url === item.url) { return; }
     nextAutoTask(); // Cancel task
     busy(true);
+    rotateController.finish();
 
     curItem = item;
     curItem.loaded = curItem.finished = false;
