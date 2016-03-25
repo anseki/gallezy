@@ -28,7 +28,7 @@ window.addEventListener('load', () => {
       both: 'Based on Both'
     },
     DEFAULT_WIN_RATIO_BASE = 'width',
-    LAZY_LAYOUT_TIME = 50,
+    LAZY_RENDER_TIME = 50,
     SCROLL_MSPF = 1000 / 60/* FPS */,
     INIT_SCROLL_SPEED = 30/* px/sec */ / 1000 * SCROLL_MSPF, // px/frame
     INIT_SCROLL_SPEED_SHIFT = INIT_SCROLL_SPEED * 2,
@@ -234,17 +234,17 @@ window.addEventListener('load', () => {
 
       if (updateProps.transform) {
         if (disableEffect) {
-          $container.addClass('effect-disabled');
-          setTimeout(() => { $container.removeClass('effect-disabled'); }, LAZY_LAYOUT_TIME);
+          $img.addClass('effect-disabled');
+          setTimeout(() => { $img.removeClass('effect-disabled'); }, LAZY_RENDER_TIME);
         } else {
           // rotate 270 > 0 replace 270 > 360
           if (rotate360 == null) { // eslint-disable-line eqeqeq
             $img.on('transitionend', event => {
               if (event.originalEvent.propertyName === 'transform' && rotate360) {
-                $container.addClass('effect-disabled');
+                $img.addClass('effect-disabled');
                 $img.css('transform', 'none');
                 rotate360 = false;
-                setTimeout(() => { $container.removeClass('effect-disabled'); }, LAZY_LAYOUT_TIME);
+                setTimeout(() => { $img.removeClass('effect-disabled'); }, LAZY_RENDER_TIME);
               }
             });
           }
@@ -292,7 +292,7 @@ window.addEventListener('load', () => {
           $bBoxPad.css('display', '');
           initViewSize();
           setImgSize(true);
-        }, LAZY_LAYOUT_TIME); // bug? interval is needed.
+        }, LAZY_RENDER_TIME); // bug? interval is needed.
       } else if (!dontInitViewSize) {
         initViewSize();
       }
@@ -867,7 +867,7 @@ window.addEventListener('load', () => {
       // Make `setImgSize` adjust it at only the end of resizing.
       setImgSize(true, true);
       clearTimeout(layoutTimer);
-      layoutTimer = setTimeout(() => { setImgSize(); }, LAZY_LAYOUT_TIME);
+      layoutTimer = setTimeout(() => { setImgSize(); }, LAZY_RENDER_TIME);
     }
   }).scroll(() => { hideMenu(); });
   ui.on('blur', () => { hideMenu(); }).on('move', () => { hideMenu(); });

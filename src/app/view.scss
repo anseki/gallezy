@@ -24,7 +24,7 @@
     left: -100%;
     margin: auto;
 
-    #container:not(.effect-disabled) & {
+    &:not(.effect-disabled) {
       transition: transform 0.2s linear;
     }
   }
