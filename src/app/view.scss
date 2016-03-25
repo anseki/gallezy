@@ -57,6 +57,7 @@
     white-space: nowrap;
     padding: 2px 2ch 2px 2px;
     &:last-of-type { padding-right: 2px; }
+    cursor: default;
   }
 
   #label {
