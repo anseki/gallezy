@@ -214,12 +214,12 @@ window.addEventListener('load', () => {
 
   /**
    * Set CSS props based on current `stats`, `curImgRatioEnabled` and `curRotate`.
-   * @param {boolean|null} dontFix - Avoid adjusting for scroll bar.
-   * @param {boolean|null} dontInitViewSize - `dontFix` must be `true`, aboid call `initViewSize`.
+   * @param {boolean|null} omitFix - Avoid adjusting for scroll bar.
+   * @param {boolean|null} omitInitViewSize - `omitFix` must be `true`, aboid call `initViewSize`.
    * @param {boolean|null} disableEffect - Disable rotate effect.
    * @returns {void}
    */
-  function setImgSize(dontFix, dontInitViewSize, disableEffect) {
+  function setImgSize(omitFix, omitInitViewSize, disableEffect) {
 
     // [obj.A, obj.B] = [obj.B, obj.A];
     function exchangeProps(obj, propA, propB) {
@@ -301,7 +301,7 @@ window.addEventListener('load', () => {
       bBoxPad.setAttribute('width', sizeProps.unscaleWidth);
       bBoxPad.setAttribute('height', sizeProps.unscaleHeight);
       // force reflow, for width/height: `auto`.
-      if (!dontFix) { $bBoxPad.css('display', 'none'); }
+      if (!omitFix) { $bBoxPad.css('display', 'none'); }
       viewResized = true;
     }
     // $bBoxPad
@@ -318,14 +318,14 @@ window.addEventListener('load', () => {
     }
 
     if (viewResized) {
-      if (!dontFix) {
+      if (!omitFix) {
         clearTimeout(layoutTimer);
         layoutTimer = setTimeout(() => {
           $bBoxPad.css('display', '');
           initViewSize();
           setImgSize(true);
         }, LAZY_RENDER_TIME); // bug? interval is needed.
-      } else if (!dontInitViewSize) {
+      } else if (!omitInitViewSize) {
         initViewSize();
       }
     }
