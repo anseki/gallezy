@@ -918,7 +918,7 @@ window.addEventListener('load', () => {
   }).scroll(() => { hideMenu(); });
   ui.on('blur', () => { hideMenu(); }).on('move', () => { hideMenu(); });
 
-  ipc.on('open', (event, item) => { open(JSON.parse(item)); });
+  ipc.on('open', (event, item) => { if (!isBusyOn) { open(JSON.parse(item)); } });
 
   ipc.on('theme-changed', (event, uiId, iTheme) => { updateTheme(iTheme); });
 

@@ -557,12 +557,13 @@ window.addEventListener('load', () => {
   $window.resize(() => { hideMenu(); }).scroll(() => { hideMenu(); });
   ui.on('blur', () => { hideMenu(); }).on('move', () => { hideMenu(); });
 
-  ipc.on('open', (event, path) => { open(path); });
-  ipc.on('choose-open-path', () => { chooseOpenPath(); });
+  ipc.on('open', (event, path) => { if (!isBusyOn) { open(path); } });
+  ipc.on('choose-open-path', () => { if (!isBusyOn) { chooseOpenPath(); } });
 
   ipc.on('change-current', (event, prev) => {
     var items, selectedItem, i;
-    if ((items = CatalogItem.items).length &&
+    if (!isBusyOn &&
+        (items = CatalogItem.items).length &&
         (selectedItem = CatalogItem.selectedItem) &&
         (i = items.indexOf(selectedItem)) > -1) {
       i = i + (prev ? -1 : 1);
