@@ -507,6 +507,11 @@ window.addEventListener('load', () => {
       $mtime.text(general.dateToString(new Date(curItem.mtime)));
       $progress.css('width', `${curItem.fileNum / curItem.filesLen * 100}%`);
       ui.setTitle(`${curItem.fileNum}/${curItem.filesLen} - ${curItem.label} - ${META.winTitle.view}`);
+      if (!stats.showInfo) {
+        clearTimeout(showInfoTimer);
+        $panel.addClass('show-info');
+        showInfoTimer = setTimeout(() => { $panel.removeClass('show-info'); }, SHOW_INFO_TIME);
+      }
     }
 
     if (!open.setupImg) { // emulate static var
@@ -535,12 +540,6 @@ window.addEventListener('load', () => {
           initViewSize();
           updateRotate(0, true);
           updateSize(stats.forceImgRatio, null, null, null, null, true);
-
-          if (!stats.showInfo) {
-            clearTimeout(showInfoTimer);
-            $panel.addClass('show-info');
-            showInfoTimer = setTimeout(() => { $panel.removeClass('show-info'); }, SHOW_INFO_TIME);
-          }
           if (stats.auto) { nextAutoTask(forward); }
         });
         busy(false, true);
