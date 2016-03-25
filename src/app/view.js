@@ -301,7 +301,9 @@ window.addEventListener('load', () => {
       bBoxPad.setAttribute('width', sizeProps.unscaleWidth);
       bBoxPad.setAttribute('height', sizeProps.unscaleHeight);
       // force reflow, for width/height: `auto`.
-      if (!omitFix) { $bBoxPad.css('display', 'none'); }
+      $bBoxPad.css('display', 'none');
+      bBoxPad.offsetWidth; // eslint-disable-line no-unused-expressions
+      $bBoxPad.css('display', '');
       viewResized = true;
     }
     // $bBoxPad
@@ -321,7 +323,6 @@ window.addEventListener('load', () => {
       if (!omitFix) {
         clearTimeout(layoutTimer);
         layoutTimer = setTimeout(() => {
-          $bBoxPad.css('display', '');
           initViewSize();
           setImgSize(true);
         }, LAZY_RENDER_TIME); // bug? interval is needed.
