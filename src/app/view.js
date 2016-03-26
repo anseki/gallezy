@@ -908,12 +908,16 @@ window.addEventListener('load', () => {
   window.addEventListener('contextmenu', event => { event.preventDefault(); }, false);
   $window.resize(() => {
     hideMenu();
+    scroll(false);
     initViewSize();
     if (curItem && !curImgRatioEnabled && stats.winRatioBase !== 'none') {
       // Make `setImgSize` adjust it at only the end of resizing.
       setImgSize(true, true);
       clearTimeout(layoutTimer);
-      layoutTimer = setTimeout(() => { setImgSize(); }, LAZY_RENDER_TIME);
+      layoutTimer = setTimeout(() => {
+        setImgSize();
+        initViewSize(); // `setImgSize(true, true)` might have changed view size.
+      }, LAZY_RENDER_TIME);
     }
   }).scroll(() => { hideMenu(); });
   ui.on('blur', () => { hideMenu(); }).on('move', () => { hideMenu(); });
