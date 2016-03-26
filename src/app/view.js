@@ -569,67 +569,68 @@ window.addEventListener('load', () => {
   // ================ App Menu & Commands
   commands = {
     openFolder: {
-      eventMatch: event => event.which === 79 && event.modKeyOnlyCtrl,
+      eventMatch: event => event.which === 79/* o */ && event.modKeyOnlyCtrl,
       handle: () => { ipc.send('choose-open-path'); }
     },
     forward: {
-      eventMatch: event => event.which === 32 && !event.modKey,
+      eventMatch: event => event.which === 32/* [SP] */ && !event.modKey,
       handle: forward
     },
     next: {
-      eventMatch: event => event.which === 32 && event.modKeyOnlyCtrl,
+      eventMatch: event => event.which === 32/* [SP] */ && event.modKeyOnlyCtrl,
       handle: () => {
         nextAutoTask(); // Cancel task
         ipc.send('change-current');
       }
     },
     prev: {
-      eventMatch: event => event.which === 32 && event.modKeyOnlyShift,
+      eventMatch: event => event.which === 32/* [SP] */ && event.modKeyOnlyShift,
       handle: () => {
         nextAutoTask(); // Cancel task
         ipc.send('change-current', true);
       }
     },
     auto: {
-      eventMatch: event => event.which === 32 && !event.altKey && event.ctrlKey && event.shiftKey,
+      eventMatch: event => event.which === 32/* [SP] */ && !event.altKey && event.ctrlKey && event.shiftKey,
       handle: () => { updateAuto(!$body.contextMenuCommon('value', 'auto')); }
     },
     imgRatioEnabled: {
-      eventMatch: event => event.which === 96 && !event.modKey,
+      eventMatch: event => event.which === 48/* 0 */ && !event.modKey ||
+                      event.which === 96/* 0(NUM) */ && !event.modKey,
       handle: () => { updateSize(!$body.contextMenuCommon('value', 'imgRatioEnabled')); },
       disabled: () => !curItem || !curItem.finished
     },
     imgRatioUp: {
-      eventMatch: event => event.which === 187 && event.modKeyOnlyShift ||
-                      event.which === 107 && !event.modKey,
+      eventMatch: event => event.which === 187/* ; */ && event.modKeyOnlyShift ||
+                      event.which === 107/* +(NUM) */ && !event.modKey,
       handle: () => { updateSize(true, true); },
       disabled: () => commandDisabled.imgRatioUp || !curItem || !curItem.finished
     },
     imgRatioDown: {
-      eventMatch: event => event.which === 189 && !event.modKey ||
-                      event.which === 109 && !event.modKey,
+      eventMatch: event => event.which === 189/* - */ && !event.modKey ||
+                      event.which === 109/* -(NUM) */ && !event.modKey,
       handle: () => { updateSize(true, false); },
       disabled: () => commandDisabled.imgRatioDown || !curItem || !curItem.finished
     },
     rotate: {
-      eventMatch: event => event.which === 82 && !event.modKey,
+      eventMatch: event => event.which === 82/* r */ && !event.modKey,
       handle: () => { updateRotate(); },
       disabled: () => !curItem || !curItem.finished
     },
     fullScreen: {
-      eventMatch: event => event.which === 122 && !event.modKey,
+      eventMatch: event => event.which === 122/* [F11] */ && !event.modKey,
       handle: () => { updateFullScreen(); }
     },
     switchUi: {
-      eventMatch: event => event.which === 9 && !event.modKey,
+      eventMatch: event => event.which === 9/* [TAB] */ && !event.modKey,
       handle: () => { ipc.send('focus-ui', 'catalog'); }
     },
     exit: {
-      eventMatch: event => event.which === 115 && event.modKeyOnlyAlt,
+      eventMatch: event => event.which === 115/* [F4] */ && event.modKeyOnlyAlt,
       handle: () => { ui.close(); }
     },
     menu: {
-      eventMatch: event => event.which === 112 && !event.modKey,
+      eventMatch: event => event.which === 112/* [F1] */ && !event.modKey,
       handle: () => {
         $body.contextMenuCommon({x: $window.scrollLeft() + 20, y: $window.scrollTop() + 20});
       }
@@ -797,8 +798,8 @@ window.addEventListener('load', () => {
   IMG_RATIO.forEach((size, i) => {
     var commandId = `imgRatioIndex${i}`;
     commands[commandId] = {
-      eventMatch: event => event.which === 49 + i && !event.modKey ||
-                      event.which === 97 + i && !event.modKey,
+      eventMatch: event => event.which === 49/* 1 */ + i && !event.modKey ||
+                      event.which === 97/* 1(NUM) */ + i && !event.modKey,
       handle: () => { updateSize(true, i); },
       disabled: () => !curItem || !curItem.finished
     };

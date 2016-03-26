@@ -278,46 +278,46 @@ window.addEventListener('load', () => {
   // ================ App Menu & Commands
   commands = {
     openFolder: {
-      eventMatch: event => event.which === 79 && event.modKeyOnlyCtrl,
+      eventMatch: event => event.which === 79/* o */ && event.modKeyOnlyCtrl,
       handle: chooseOpenPath
     },
     openView: {
-      eventMatch: event => event.which === 32 && !event.modKey,
+      eventMatch: event => event.which === 32/* [SP] */ && !event.modKey,
       handle: () => { view(); }, // avoid passing argument
       disabled: () => !CatalogItem.items.length
     },
     listView: {
-      eventMatch: event => event.which === 76 && !event.modKey,
+      eventMatch: event => event.which === 76/* l */ && !event.modKey,
       handle: () => { updateViewType(!$body.contextMenuCommon('value', 'listView')); },
       disabled: () => !CatalogItem.items.length
     },
     thumbSizeUp: {
-      eventMatch: event => event.which === 187 && event.modKeyOnlyShift ||
-                      event.which === 107 && !event.modKey,
+      eventMatch: event => event.which === 187/* ; */ && event.modKeyOnlyShift ||
+                      event.which === 107/* +(NUM) */ && !event.modKey,
       handle: () => { updateThumbSize(true); },
       disabled: () => commandDisabled.thumbSize || commandDisabled.thumbSizeUp || !CatalogItem.items.length
     },
     thumbSizeDown: {
-      eventMatch: event => event.which === 189 && !event.modKey ||
-                      event.which === 109 && !event.modKey,
+      eventMatch: event => event.which === 189/* - */ && !event.modKey ||
+                      event.which === 109/* -(NUM) */ && !event.modKey,
       handle: () => { updateThumbSize(false); },
       disabled: () => commandDisabled.thumbSize || commandDisabled.thumbSizeDown || !CatalogItem.items.length
     },
     fullScreen: {
-      eventMatch: event => event.which === 122 && !event.modKey,
+      eventMatch: event => event.which === 122/* [F11] */ && !event.modKey,
       handle: () => { updateFullScreen(); }
     },
     switchUi: {
-      eventMatch: event => event.which === 9 && !event.modKey,
+      eventMatch: event => event.which === 9/* [TAB] */ && !event.modKey,
       handle: () => { ipc.send('focus-ui', 'view'); },
       disabled: () => !viewOpened
     },
     exit: {
-      eventMatch: event => event.which === 115 && event.modKeyOnlyAlt,
+      eventMatch: event => event.which === 115/* [F4] */ && event.modKeyOnlyAlt,
       handle: () => { ui.close(); }
     },
     menu: {
-      eventMatch: event => event.which === 112 && !event.modKey,
+      eventMatch: event => event.which === 112/* [F1] */ && !event.modKey,
       handle: () => {
         $body.contextMenuCommon({x: $window.scrollLeft() + 20, y: $window.scrollTop() + 20});
       }
@@ -419,8 +419,8 @@ window.addEventListener('load', () => {
   THUMB_SIZE.forEach((size, i) => {
     var commandId = `thumbSizeIndex${i}`;
     commands[commandId] = {
-      eventMatch: event => event.which === 49 + i && !event.modKey ||
-                      event.which === 97 + i && !event.modKey,
+      eventMatch: event => event.which === 49/* 1 */ + i && !event.modKey ||
+                      event.which === 97/* 1(NUM) */ + i && !event.modKey,
       handle: () => { updateThumbSize(i); },
       disabled: () => commandDisabled.thumbSize || !CatalogItem.items.length
     };
