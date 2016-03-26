@@ -2,6 +2,9 @@
 @import "common";
 @import "theme";
 
+$progress-bar-height: 5px;
+$panel-min-height: 80px;
+
 #container {
   display: inline-flex; // `flex` doesn't grow over body width
   vertical-align: top; // to avoid margin of inline element
@@ -33,22 +36,60 @@
   }
 }
 
-#panel-wrap {
+#panel {
   position: fixed;
   left: 0;
-  bottom: 0;
   width: 100%;
-  padding-top: 80px;
+  min-height: $panel-min-height;
+
+  &:not(.bottom) {
+    top: 0;
+    #bottom-button { background-color: red; }
+    #panel-content { transform: translateY(-100%); }
+  }
+
+  &.bottom {
+    bottom: 0;
+    #bottom-button { background-color: blue; }
+    white-space: nowrap;
+
+    &::before { // emulate `min-height`
+      content: "";
+      vertical-align: bottom;
+      display: inline-block;
+      width: 0;
+      height: $panel-min-height;
+    }
+
+    #panel-content {
+      transform: translateY(100%);
+
+      display: inline-block; // emulate `min-height`
+      width: 100%;
+      position: relative;
+      padding-bottom: $progress-bar-height;
+    }
+
+    #progress-bar {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+  }
 }
 
-#panel {
+#panel-content {
   transition: transform 0.08s linear;
-  transform: translateY(100%);
 
-  #panel-wrap:hover &,
-  &.show-info {
+  #panel:hover &,
+  #panel.show-info & {
     transform: translateY(0);
   }
+}
+
+#progress-bar {
+  height: $progress-bar-height;
+  background-color: $hl-color;
 }
 
 #info {
@@ -72,11 +113,11 @@
     word-break: break-all;
     white-space: pre-wrap;
     // word-break: break-word; // doesn't work with `flex`?
-
   }
-}
 
-#progress-bar {
-  height: 5px;
-  background-color: $hl-color;
+  #bottom-button {
+    width: 1.28rem;
+    height: 1.28rem;
+    cursor: pointer;
+  }
 }

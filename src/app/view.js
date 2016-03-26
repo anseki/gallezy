@@ -496,6 +496,13 @@ window.addEventListener('load', () => {
     return fullScreen;
   }
 
+  function updatePanelBottom(panelBottom) {
+    if (panelBottom !== stats.panelBottom) {
+      $panel[(stats.panelBottom = panelBottom) ? 'addClass' : 'removeClass']('bottom');
+    }
+    return stats.panelBottom;
+  }
+
   function open(item) {
     function setInfo() {
       $label.text(`${curItem.fileNum}/${curItem.filesLen} - ${curItem.label}`);
@@ -898,6 +905,8 @@ window.addEventListener('load', () => {
     stats.theme = updateTheme(
       typeof rawStats.theme === 'number' && THEME_CLASS[rawStats.theme] ?
         rawStats.theme : DEFAULT_THEME_CLASS);
+    stats.panelBottom = updatePanelBottom(
+      typeof rawStats.panelBottom === 'boolean' ? rawStats.panelBottom : false);
   }
   // `ui.on('close')` doesn't work.
   // `ipc.send` doesn't finish. https://github.com/atom/electron/issues/4366
@@ -905,6 +914,8 @@ window.addEventListener('load', () => {
     ipc.sendSync('set-stats', 'view', JSON.stringify(stats));
   }, false);
   // ================ /stats
+
+  $('#bottom-button').click(() => { updatePanelBottom(!stats.panelBottom); });
 
   ui.setMenu(null);
   window.addEventListener('contextmenu', event => { event.preventDefault(); }, false);
