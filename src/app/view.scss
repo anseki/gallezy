@@ -3,16 +3,19 @@
 @import "theme";
 
 #container {
-  min-height: 100%;
-  display: flex;
+  display: inline-flex; // `flex` doesn't grow over body width
+  vertical-align: top; // to avoid margin of inline element
   justify-content: center;
   align-items: center;
+  min-width: 100%;
+  min-height: 100%;
 }
 
 #bound-box {
   flex-shrink: 0;
   overflow: hidden;
   display: inline-block;
+  vertical-align: top; // to avoid margin of inline element
   line-height: 0;
   position: relative; // for `overflow:hidden` with `img{position:absolute}`
 
