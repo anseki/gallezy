@@ -28,11 +28,12 @@ window.addEventListener('load', () => {
       both: 'Based on Both'
     },
     DEFAULT_WIN_RATIO_BASE = 'width',
-    LAZY_RENDER_TIME = 50,
+
+    LAZY_RENDER_TIME = 50, SHOW_INFO_TIME = 3000,
     SCROLL_MSPF = 1000 / 60/* FPS */,
-    INIT_SCROLL_SPEED = 30/* px/sec */ / 1000 * SCROLL_MSPF, // px/frame
-    INIT_SCROLL_SPEED_SHIFT = INIT_SCROLL_SPEED * 2,
-    DOUBLE_PRESS_INTERVAL = 800, SHOW_INFO_TIME = 3000,
+    INIT_SCROLL_PXPF = 30/* px/sec */ / 1000 * SCROLL_MSPF, // px/frame
+    DEFAULT_SCROLL_PXPF_SHIFT_RATE = 1.5, MAX_SCROLL_PXPF_SHIFT_RATE = 5,
+    DOUBLE_PRESS_INTERVAL = 800,
     ERROR_IMG_URL = './error.svg', ERROR_IMG_WIDTH = 100, ERROR_IMG_HEIGHT = 130;
 
   var ui = remote.getCurrentWindow(),
@@ -46,7 +47,7 @@ window.addEventListener('load', () => {
     isBusyOn = false, menuShown = false,
     stats = {}, commands, menuItems, commandDisabled = {},
     curImgRatioEnabled = false, curRotate, curSizeProps = {},
-    scrolling, scrollSpeed, scrollSpeedShift, lastShift, scrollTimer, curScrollLeft, curScrollTop,
+    scrolling, scrollPxpf, lastScrollRequest, scrollTimer, curScrollLeft, curScrollTop,
     autoTimer, showInfoTimer,
 
     /**
@@ -138,23 +139,23 @@ window.addEventListener('load', () => {
     actScrollTop = $window.scrollTop();
 
     if (start === false) {
-      scrollSpeed = INIT_SCROLL_SPEED;
-      scrollSpeedShift = INIT_SCROLL_SPEED_SHIFT;
-      lastShift = 0;
+      scrollPxpf = INIT_SCROLL_PXPF;
       scrolling = false;
       return false;
     } else if (start) {
+      let now = Date.now();
       if (scrolling) {
-        let now = Date.now();
-        if (now - lastShift < DOUBLE_PRESS_INTERVAL) { // boost
-          scrollSpeedShift *= 3;
+        let interval = now - lastScrollRequest, shiftRate = DEFAULT_SCROLL_PXPF_SHIFT_RATE;
+        if (interval < DOUBLE_PRESS_INTERVAL) { // boost
+          shiftRate += (1 - interval / DOUBLE_PRESS_INTERVAL) *
+            (MAX_SCROLL_PXPF_SHIFT_RATE - DEFAULT_SCROLL_PXPF_SHIFT_RATE);
         }
-        lastShift = now;
-        scrollSpeed += scrollSpeedShift;
+        scrollPxpf *= shiftRate;
       } else {
         curScrollLeft = actScrollLeft;
         curScrollTop = actScrollTop;
       }
+      lastScrollRequest = now;
     }
 
     maxScrollLeft = viewScrollWidth - viewWidth;
@@ -166,15 +167,15 @@ window.addEventListener('load', () => {
       return scroll(false);
     }
 
-    if (Math.abs(actScrollLeft - curScrollLeft) > scrollSpeed * 10 ||
-        Math.abs(actScrollTop - curScrollTop) > scrollSpeed * 10) {
+    if (Math.abs(actScrollLeft - curScrollLeft) > scrollPxpf * 10 ||
+        Math.abs(actScrollTop - curScrollTop) > scrollPxpf * 10) {
       // It seems that the user scrolled.
       return scroll(false);
     }
 
     scrolling = true;
-    curScrollLeft += scrollSpeed;
-    curScrollTop += scrollSpeed;
+    curScrollLeft += scrollPxpf;
+    curScrollTop += scrollPxpf;
     if (curScrollLeft > maxScrollLeft) { curScrollLeft = maxScrollLeft; }
     if (curScrollTop > maxScrollTop) { curScrollTop = maxScrollTop; }
     $window.scrollLeft(curScrollLeft);
@@ -644,7 +645,7 @@ window.addEventListener('load', () => {
     s01: {type: 'cm_seperator'},
     forward: {
       label: [$('<span title="Make scrolling speed higher if it is scrolling.' +
-        ' And make it more if the key is pressed at short intervals.">Scroll or' +
+        ' Also, make it more if the key is pressed at short intervals.">Scroll or' +
         ' <span class="context-menu-accesskey">N</span>ext Image</span>'), 'Space'],
       callback: commands.forward.handle,
       accesskey: 'n'
