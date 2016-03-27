@@ -499,6 +499,7 @@ window.addEventListener('load', () => {
   function updatePanelBottom(panelBottom) {
     if (panelBottom !== stats.panelBottom) {
       $panel[(stats.panelBottom = panelBottom) ? 'addClass' : 'removeClass']('bottom');
+      $('#bottom-button').attr('title', `Switch to ${panelBottom ? 'top' : 'bottom'}`);
     }
     return stats.panelBottom;
   }

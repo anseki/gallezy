@@ -44,13 +44,18 @@ $panel-min-height: 80px;
 
   &:not(.bottom) {
     top: 0;
-    #bottom-button { background-color: red; }
     #panel-content { transform: translateY(-100%); }
   }
 
   &.bottom {
     bottom: 0;
-    #bottom-button { background-color: blue; }
+    #info { align-items: flex-end; }
+
+    #bottom-button svg {
+      transform: scaleY(-1) translateY(2px);
+      // vertical-align: top;
+    }
+
     white-space: nowrap;
 
     &::before { // emulate `min-height`
@@ -94,7 +99,6 @@ $panel-min-height: 80px;
 
 #info {
   display: flex;
-  align-items: flex-end;
 
   & > div {
     @include font-rem-by-px(12.8);
@@ -104,7 +108,7 @@ $panel-min-height: 80px;
     cursor: default;
   }
 
-  #label {
+  #label { // `#info` selector to add score
     flex-grow: 1;
     min-width: 5ch;
     padding: 2px;
@@ -115,9 +119,17 @@ $panel-min-height: 80px;
     // word-break: break-word; // doesn't work with `flex`?
   }
 
-  #bottom-button {
+  #bottom-button { // `#info` selector to add score
+    flex-shrink: 0;
     width: 1.28rem;
     height: 1.28rem;
+    padding-right: 5px;
     cursor: pointer;
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+    &:hover svg { fill: $hl-color; }
   }
 }

@@ -3,9 +3,11 @@
 body.dark {
   #panel-content { background-color: rgba($dark-background-color, 0.8); }
   #info { color: $dark-img-label-color; }
+  #bottom-button svg { fill: $dark-img-label-color; }
 }
 
 body.light {
   #panel-content { background-color: rgba($light-background-color, 0.8); }
   #info { color: $light-img-label-color; }
+  #bottom-button svg { fill: $light-img-label-color; }
 }
