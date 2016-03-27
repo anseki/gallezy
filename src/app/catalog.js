@@ -18,7 +18,22 @@ window.addEventListener('load', () => {
     general = require('./general.js'),
 
     META = JSON.parse(ipc.sendSync('get-meta')),
-    FILE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'tif', 'wmf'],
+    FILE_EXTS = [
+      // https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+      'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', // JPEG
+      // 'jp2', 'j2k', 'jpf', 'jpx', 'jpm', 'mj2', // JPEG 2000
+      // 'jxr', 'hdp', 'wdp', // JPEG XR
+      'webp', // WebP
+      'gif', // GIF
+      'png', // PNG
+      // 'mng', // MNG
+      // 'tiff', 'tif', // TIFF
+      'svg', 'svgz', // SVG
+      // 'pdf', // PDF
+      // 'xbm', // XBM
+      'bmp', 'dib', // BMP
+      'ico' // ICO
+    ],
     THUMB_SIZE = [50, 100, 150, 200, 250, 300, 400, 500], // Max: 9 items
     DEFAULT_THUMB_SIZE = 2,
     THEME_CLASS = ['dark', 'light'],
