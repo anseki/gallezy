@@ -327,7 +327,7 @@ CatalogItem.init = ($itemsContainer, $documentBody, $documentWindow) => {
     viewWidth = elmView.clientWidth;
     viewHeight = elmView.clientHeight;
     if (!items.length) { return; }
-    if (!listView) { updateBBox(); }
+    updateBBox();
     (selectedItem || items[0]).select(); // to scroll.
   }
 
