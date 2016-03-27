@@ -47,7 +47,8 @@ window.addEventListener('load', () => {
       extension: 'File Extension',
       mtime: 'Modified Time',
       size: 'File Size'
-    };
+    },
+    MENU_HIDE_DURATION = 100; // jquery.contextMenu.js L219 50ms
 
   var ui = remote.getCurrentWindow(),
     $window = $(window), $body = $('body').plainOverlay(),
@@ -60,15 +61,17 @@ window.addEventListener('load', () => {
   }
 
   function showError(error) {
-    hideMenu();
     console.error(error);
-    dialog.showMessageBox(ui, {
-      type: 'error',
-      buttons: ['OK'],
-      title: 'Error',
-      message: typeof error === 'string' ? error :
-        `[${error.code || 'ERROR'}]\n${error.message || error}`
-    });
+    hideMenu();
+    setTimeout(() => {
+      dialog.showMessageBox(ui, {
+        type: 'error',
+        buttons: ['OK'],
+        title: 'Error',
+        message: typeof error === 'string' ? error :
+          `[${error.code || 'ERROR'}]\n${error.message || error}`
+      });
+    }, MENU_HIDE_DURATION);
   }
 
   function busy(bOn, ignoreComplete) {
@@ -258,14 +261,15 @@ window.addEventListener('load', () => {
   }
 
   function chooseOpenPath() {
-    var path;
     hideMenu();
-    path = dialog.showOpenDialog(ui, {
-      title: 'Open Folder',
-      defaultPath: stats.lastPath,
-      properties: ['openDirectory']
-    });
-    if (path && path[0]) { open(path[0]); }
+    setTimeout(() => {
+      var path = dialog.showOpenDialog(ui, {
+        title: 'Open Folder',
+        defaultPath: stats.lastPath,
+        properties: ['openDirectory']
+      });
+      if (path && path[0]) { open(path[0]); }
+    }, MENU_HIDE_DURATION);
   }
 
   function view(exist) {
@@ -420,6 +424,21 @@ window.addEventListener('load', () => {
       accesskey: 'f'
     },
     s03: {type: 'cm_seperator'},
+    about: {
+      label: 'About',
+      callback: () => {
+        setTimeout(() => {
+          dialog.showMessageBox(ui, {
+            // type: 'none',
+            buttons: ['OK'],
+            icon: META.icon32l,
+            title: META.title,
+            message: META.title,
+            detail: `Version: ${META.version}\nAuthor: ${META.author.name}`
+          });
+        }, MENU_HIDE_DURATION);
+      }
+    },
     switchUi: {
       label: ['Switch Window', 'Tab'],
       callback: commands.switchUi.handle,

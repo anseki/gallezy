@@ -7,9 +7,17 @@ const
   BrowserWindow = electron.BrowserWindow,
   ipc = electron.ipcMain,
 
+  pathUtil = require('path'),
+
   DEFAULT_CATALOG_WIDTH = 400,
-  META = require('./package.json'),
-  STATS_PATH = require('path').join(__dirname, '../stats.json'),
+  META = (() => {
+    var META = require('./package.json');
+    META.winTitle = {catalog: `Catalog - ${META.title}`, view: `View - ${META.title}`};
+    META.icon = pathUtil.join(__dirname, 'icon.png');
+    META.icon32l = pathUtil.join(__dirname, 'icon32l.png');
+    return META;
+  })(),
+  STATS_PATH = pathUtil.join(__dirname, '../stats.json'),
   URL = {
     /* eslint-disable no-path-concat */
     catalog: 'file://' + __dirname + '/catalog.html',
@@ -40,7 +48,7 @@ function getUi(uiId, ready) {
       title: META.winTitle[uiId],
       minWidth: 400,
       minHeight: 320,
-      icon: require('path').join(__dirname, 'icon.png')
+      icon: META.icon
     }));
     targetUi.webContents.openDevTools(); // [DEV]
     if (statsUi.max) {
@@ -127,8 +135,6 @@ function loadStats() {
   stats.view = rawStats.view || {};
   return stats;
 }
-
-META.winTitle = {catalog: `Catalog - ${META.title}`, view: `View - ${META.title}`};
 
 app.on('ready', () => {
   stats = loadStats();
