@@ -9,7 +9,7 @@ const
 
   pathUtil = require('path'),
 
-  DEFAULT_CATALOG_WIDTH = 400,
+  DEFAULT_CATALOG_WIDTH = 600,
   META = (() => {
     var META = require('./package.json');
     META.winTitle = {catalog: `Catalog - ${META.title}`, view: `View - ${META.title}`};
