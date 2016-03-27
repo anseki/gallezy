@@ -578,7 +578,7 @@ window.addEventListener('load', () => {
   commands = {
     openFolder: {
       eventMatch: event => event.which === 79/* o */ && event.modKeyOnlyCtrl,
-      handle: () => { ipc.send('choose-open-path'); }
+      handle: () => { if (!isBusyOn) { ipc.send('choose-open-path'); } }
     },
     forward: {
       eventMatch: event => event.which === 32/* [SP] */ && !event.modKey,
@@ -916,8 +916,6 @@ window.addEventListener('load', () => {
   }, false);
   // ================ /stats
 
-  $('#bottom-button').click(() => { updatePanelBottom(!stats.panelBottom); });
-
   ui.setMenu(null);
   window.addEventListener('contextmenu', event => { event.preventDefault(); }, false);
   $window.resize(() => {
@@ -939,6 +937,9 @@ window.addEventListener('load', () => {
   ipc.on('open', (event, item) => { if (!isBusyOn) { open(JSON.parse(item)); } });
 
   ipc.on('theme-changed', (event, uiId, iTheme) => { updateTheme(iTheme); });
+
+  $('#bottom-button').click(() => { updatePanelBottom(!stats.panelBottom); });
+  general.fileDrop(path => { if (!isBusyOn) { ipc.send('catalog', path); } });
 
   ipc.send('ui-ready');
 }, false);

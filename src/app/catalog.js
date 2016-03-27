@@ -15,6 +15,7 @@ window.addEventListener('load', () => {
     $ = window.$ || window.jQuery,
     CatalogItem = require('./catalog-item.js'),
     keyEvent = require('./key-event.js'),
+    general = require('./general.js'),
 
     META = JSON.parse(ipc.sendSync('get-meta')),
     FILE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'tif', 'wmf'],
@@ -578,6 +579,8 @@ window.addEventListener('load', () => {
   });
 
   ipc.on('theme-changed', (event, uiId, iTheme) => { updateTheme(iTheme); });
+
+  general.fileDrop(path => { if (!isBusyOn) { open(path); } });
 
   ipc.send('ui-ready');
 }, false);

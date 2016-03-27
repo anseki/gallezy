@@ -28,3 +28,17 @@ module.exports.dateToString = date => `${date.getFullYear()}` +
   ` ${('00' + date.getHours()).slice(-2)}` +
   `:${('00' + date.getMinutes()).slice(-2)}` +
   `:${('00' + date.getSeconds()).slice(-2)}`;
+
+module.exports.fileDrop = drop => {
+  document.addEventListener('dragover', event => {
+    event.stopPropagation();
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+  }, true);
+
+  document.addEventListener('drop', event => {
+    event.stopPropagation();
+    event.preventDefault();
+    drop(event.dataTransfer.files[0] ? event.dataTransfer.files[0].path : null);
+  }, true);
+};

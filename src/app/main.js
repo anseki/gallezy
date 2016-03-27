@@ -182,15 +182,12 @@ app.on('ready', () => {
     });
   });
 
-  ipc.on('view', (event, item, exist) => {
-    if (!exist) {
-      getUi('view', ui => {
-        ui.focus();
-        ui.webContents.send('open', item);
-      });
-    } else if (ui.view) {
-      ui.view.webContents.send('open', item);
-    }
+  // ================ API for catalog
+  ipc.on('catalog', (event, path) => {
+    getUi('catalog', ui => {
+      ui.focus();
+      ui.webContents.send('open', path);
+    });
   });
 
   ipc.on('choose-open-path', () => {
@@ -204,6 +201,20 @@ app.on('ready', () => {
       ui.webContents.send('change-current', prev);
     });
   });
+  // ================ /API for catalog
+
+  // ================ API for view
+  ipc.on('view', (event, item, exist) => {
+    if (!exist) {
+      getUi('view', ui => {
+        ui.focus();
+        ui.webContents.send('open', item);
+      });
+    } else if (ui.view) {
+      ui.view.webContents.send('open', item);
+    }
+  });
+  // ================ /API for view
 
   // Init
   getUi('catalog', ui => {
