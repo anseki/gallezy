@@ -1,0 +1,30 @@
+{
+  "name": "gallezy",
+  "version": "0.0.1",
+  "title": "Gallezy",
+  "description": "xxx",
+  "keywords": [
+    "xxx",
+    "xxx"
+  ],
+  "main": "main.js",
+  "dependencies": {},
+  "devDependencies": {
+    "electron-prebuilt": "^0.36.10",
+    "jquery": "^2.2.1",
+    "jquery-contextmenu-common": "0.0.6",
+    "jquery-plainoverlay": "^0.8.0",
+    "stats-filelist": "^0.1.1"
+  },
+  "homepage": "https://github.com/anseki/gallezy",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anseki/gallezy.git"
+  },
+  "bugs": "https://github.com/anseki/gallezy/issues",
+  "license": "MIT",
+  "author": {
+    "name": "anseki",
+    "url": "https://github.com/anseki"
+  }
+}
