@@ -169,7 +169,7 @@ window.addEventListener('load', () => {
 
     if (Math.abs(actScrollLeft - curScrollLeft) > scrollPxpf * 10 ||
         Math.abs(actScrollTop - curScrollTop) > scrollPxpf * 10) {
-      // It seems that the user scrolled.
+      // It seems to have been scrolled by user.
       return scroll(false);
     }
 
@@ -872,7 +872,7 @@ window.addEventListener('load', () => {
     selector: 'body',
     items: menuItems,
     events: {
-      show: () => { menuShown = true; },
+      show: () => { menuShown = true; scroll(false); },
       hide: () => { menuShown = false; }
     }
   });
