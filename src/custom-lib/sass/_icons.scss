@@ -1,0 +1,13 @@
+
+.context-menu-icon-open {
+  @include context-menu-item-icon(open);
+}
+.context-menu-icon-play {
+  @include context-menu-item-icon(play);
+}
+.context-menu-icon-quit {
+  @include context-menu-item-icon(quit);
+}
+.context-menu-icon-window {
+  @include context-menu-item-icon(window);
+}

@@ -649,7 +649,8 @@ window.addEventListener('load', () => {
     openFolder: {
       label: ['Open Folder...', 'Ctrl+O'],
       callback: commands.openFolder.handle,
-      accesskey: 'o'
+      accesskey: 'o',
+      icon: 'open'
     },
     s01: {type: 'cm_seperator'},
     forward: {
@@ -657,7 +658,8 @@ window.addEventListener('load', () => {
         ' Also, make it more if the key is pressed at short intervals.">Scroll or' +
         ' <span class="context-menu-accesskey">N</span>ext Image</span>'), 'Space'],
       callback: commands.forward.handle,
-      accesskey: 'n'
+      accesskey: 'n',
+      icon: 'play'
     },
     next: {
       label: ['Next Image', 'Ctrl+Space'],
@@ -717,12 +719,14 @@ window.addEventListener('load', () => {
     s04: {type: 'cm_seperator'},
     switchUi: {
       label: ['Switch Window', 'Tab'],
-      callback: commands.switchUi.handle
+      callback: commands.switchUi.handle,
+      icon: 'window'
     },
     exit: {
       label: ['Exit Viewer', 'Alt+F4'],
       callback: commands.exit.handle,
-      accesskey: 'x'
+      accesskey: 'x',
+      icon: 'quit'
     }
   };
 

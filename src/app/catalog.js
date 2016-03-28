@@ -348,13 +348,15 @@ window.addEventListener('load', () => {
     openFolder: {
       label: ['Open Folder...', 'Ctrl+O'],
       callback: commands.openFolder.handle,
-      accesskey: 'o'
+      accesskey: 'o',
+      icon: 'open'
     },
     openView: {
       label: ['Open Viewer', 'Space'],
       callback: commands.openView.handle,
       accesskey: 'v',
-      disabled: () => !CatalogItem.items.length
+      disabled: () => !CatalogItem.items.length,
+      icon: 'play'
     },
     s01: {type: 'cm_seperator'},
     listView: {
@@ -442,12 +444,14 @@ window.addEventListener('load', () => {
     switchUi: {
       label: ['Switch Window', 'Tab'],
       callback: commands.switchUi.handle,
-      disabled: () => !viewOpened
+      disabled: () => !viewOpened,
+      icon: 'window'
     },
     exit: {
       label: ['Exit', 'Alt+F4'],
       callback: commands.exit.handle,
-      accesskey: 'x'
+      accesskey: 'x',
+      icon: 'quit'
     }
   };
 

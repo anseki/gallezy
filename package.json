@@ -10,9 +10,15 @@
   "dependencies": {},
   "devDependencies": {
     "electron-prebuilt": "^0.36.10",
+    "gulp": "^3.9.1",
+    "gulp-consolidate": "^0.2.0",
+    "gulp-iconfont": "^6.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.2.0",
     "jquery": "^2.2.1",
     "jquery-contextmenu-common": "0.0.6",
     "jquery-plainoverlay": "^0.8.0",
+    "lodash": "^4.6.1",
     "stats-filelist": "^0.1.1"
   },
   "homepage": "https://github.com/anseki/gallezy",
