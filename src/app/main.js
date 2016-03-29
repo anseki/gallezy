@@ -49,7 +49,7 @@ function getUi(uiId, ready) {
       minWidth: 400,
       minHeight: 320
     }));
-    targetUi.webContents.openDevTools(); // [DEV]
+    targetUi.webContents.openDevTools(); // [DEBUG]
     if (statsUi.max) {
       targetUi.maximize();
     } else if (statsUi.full) {
