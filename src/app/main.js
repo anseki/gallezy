@@ -13,8 +13,8 @@ const
   META = (() => {
     var META = require('./package.json');
     META.winTitle = {catalog: `Catalog - ${META.title}`, view: `View - ${META.title}`};
-    META.icon = pathUtil.join(__dirname, 'icon.png');
-    META.icon32l = pathUtil.join(__dirname, 'icon32l.png');
+    // META.icon = pathUtil.join(__dirname, 'icon.png');
+    META.icon32 = pathUtil.join(__dirname, 'icon-app-32.png');
     return META;
   })(),
   STATS_PATH = pathUtil.join(__dirname, '../stats.json'),
@@ -47,8 +47,7 @@ function getUi(uiId, ready) {
       show: false, // Hide constructing
       title: META.winTitle[uiId],
       minWidth: 400,
-      minHeight: 320,
-      icon: META.icon
+      minHeight: 320
     }));
     targetUi.webContents.openDevTools(); // [DEV]
     if (statsUi.max) {

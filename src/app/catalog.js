@@ -69,7 +69,8 @@ window.addEventListener('load', () => {
         buttons: ['OK'],
         title: 'Error',
         message: typeof error === 'string' ? error :
-          `[${error.code || 'ERROR'}]\n${error.message || error}`
+          `[${error.code || 'ERROR'}]\n${error.message || error}`,
+        noLink: true
       });
     }, MENU_HIDE_DURATION);
   }
@@ -433,10 +434,11 @@ window.addEventListener('load', () => {
           dialog.showMessageBox(ui, {
             // type: 'none',
             buttons: ['OK'],
-            icon: META.icon32l,
+            icon: META.icon32,
             title: META.title,
             message: META.title,
-            detail: `Version: ${META.version}\nAuthor: ${META.author.name}`
+            detail: `Version: ${META.version}\nAuthor: ${META.author.name}`,
+            noLink: true
           });
         }, MENU_HIDE_DURATION);
       }
