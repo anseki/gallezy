@@ -12,12 +12,19 @@ const
   DEFAULT_CATALOG_WIDTH = 600,
   META = (() => {
     var META = require('./package.json');
-    META.winTitle = {catalog: `Catalog - ${META.title}`, view: `View - ${META.title}`};
+    META.winTitle = {catalog: `Catalog - ${META.productName}`, view: `View - ${META.productName}`};
     // META.icon = pathUtil.join(__dirname, 'icon.png');
     META.icon32 = pathUtil.join(__dirname, 'icon-app-32.png');
     return META;
   })(),
+
+  /* [DEBUG/]
+  STATS_PATH = pathUtil.join(app.getPath('userData'), 'stats.json'),
+  [DEBUG/] */
+  // [DEBUG]
   STATS_PATH = pathUtil.join(__dirname, '../stats.json'),
+  // [/DEBUG]
+
   URL = {
     /* eslint-disable no-path-concat */
     catalog: 'file://' + __dirname + '/catalog.html',
@@ -49,7 +56,7 @@ function getUi(uiId, ready) {
       minWidth: 400,
       minHeight: 320
     }));
-    targetUi.webContents.openDevTools(); // [DEBUG]
+    targetUi.webContents.openDevTools(); // [DEBUG/]
     if (statsUi.max) {
       targetUi.maximize();
     } else if (statsUi.full) {

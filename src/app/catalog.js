@@ -435,8 +435,8 @@ window.addEventListener('load', () => {
             // type: 'none',
             buttons: ['OK'],
             icon: META.icon32,
-            title: META.title,
-            message: META.title,
+            title: META.productName,
+            message: META.productName,
             detail: `Version: ${META.version}\nAuthor: ${META.author.name}`,
             noLink: true
           });
