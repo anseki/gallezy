@@ -141,108 +141,119 @@ function loadStats() {
   return stats;
 }
 
-app.on('ready', () => {
-  stats = loadStats();
-  electron.Menu.setApplicationMenu(null);
+if (app.makeSingleInstance(argv => { // first instance caught the starting a second instance
+  if (ui.catalog && ui.catalog.ready) {
+    if (ui.catalog.isMinimized()) { ui.catalog.restore(); }
+    ui.catalog.focus();
+    if (argv[2]) { ui.catalog.webContents.send('open', argv[2]); }
+  }
+})) { // second instance
+  app.quit();
+} else { // first instance
+  app.on('ready', () => {
+    stats = loadStats();
+    electron.Menu.setApplicationMenu(null);
 
-  ipc.on('ui-ready', event => {
-    var uiSender = BrowserWindow.fromWebContents(event.sender),
-      uiId = Object.keys(ui).find(id => uiSender === ui[id]);
+    ipc.on('ui-ready', event => {
+      var uiSender = BrowserWindow.fromWebContents(event.sender),
+        uiId = Object.keys(ui).find(id => uiSender === ui[id]);
 
-    uiSender.show();
-    // `ready` callbacks that were passed to `getUi` method.
-    if (uiReadyCb[uiId] && uiReadyCb[uiId].length) {
-      uiReadyCb[uiId].forEach(cb => { cb(uiSender); });
-      uiReadyCb[uiId] = [];
-    }
-    // `ui-opened-closed` event
-    Object.keys(ui).forEach(id => {
-      if (id !== uiId && ui[id]) {
-        ui[id].webContents.send('ui-opened-closed', uiId, true);
+      uiSender.show();
+      // `ready` callbacks that were passed to `getUi` method.
+      if (uiReadyCb[uiId] && uiReadyCb[uiId].length) {
+        uiReadyCb[uiId].forEach(cb => { cb(uiSender); });
+        uiReadyCb[uiId] = [];
       }
-    });
-  });
-
-  // getter/setter
-  ipc.on('get-meta', event => { event.returnValue = JSON.stringify(META); });
-  ipc.on('get-stats', (event, uiId) => { event.returnValue = JSON.stringify(stats[uiId]); });
-  ipc.on('set-stats', (event, uiId, uiStats) => {
-    stats[uiId] = JSON.parse(uiStats);
-    // `ipc.send` doesn't finish. https://github.com/atom/electron/issues/4366
-    event.returnValue = true;
-  });
-
-  ipc.on('focus-ui', (event, uiId) => {
-    if (ui[uiId]) {
-      if (ui[uiId].isMinimized()) { ui[uiId].restore(); } // It might be necessary in some environment.
-      ui[uiId].focus();
-    }
-  });
-
-  ipc.on('theme-changed', (event, iTheme) => {
-    var uiSender = BrowserWindow.fromWebContents(event.sender),
-      uiId = Object.keys(ui).find(id => uiSender === ui[id]);
-    Object.keys(stats).forEach(id => {
-      if (id !== 'ui' && id !== uiId) {
-        if (ui[id]) {
-          ui[id].webContents.send('theme-changed', uiId, iTheme);
-        } else {
-          stats[id].theme = iTheme;
+      // `ui-opened-closed` event
+      Object.keys(ui).forEach(id => {
+        if (id !== uiId && ui[id]) {
+          ui[id].webContents.send('ui-opened-closed', uiId, true);
         }
+      });
+      uiSender.ready = true;
+    });
+
+    // getter/setter
+    ipc.on('get-meta', event => { event.returnValue = JSON.stringify(META); });
+    ipc.on('get-stats', (event, uiId) => { event.returnValue = JSON.stringify(stats[uiId]); });
+    ipc.on('set-stats', (event, uiId, uiStats) => {
+      stats[uiId] = JSON.parse(uiStats);
+      // `ipc.send` doesn't finish. https://github.com/atom/electron/issues/4366
+      event.returnValue = true;
+    });
+
+    ipc.on('focus-ui', (event, uiId) => {
+      if (ui[uiId]) {
+        if (ui[uiId].isMinimized()) { ui[uiId].restore(); } // It might be necessary in some environment.
+        ui[uiId].focus();
       }
     });
-  });
 
-  // ================ API for catalog
-  ipc.on('catalog', (event, path) => {
-    getUi('catalog', ui => {
-      ui.focus();
-      ui.webContents.send('open', path);
-    });
-  });
-
-  ipc.on('choose-open-path', () => {
-    getUi('catalog', ui => {
-      ui.webContents.send('choose-open-path');
-    });
-  });
-
-  ipc.on('change-current', (event, prev) => {
-    getUi('catalog', ui => {
-      ui.webContents.send('change-current', prev);
-    });
-  });
-  // ================ /API for catalog
-
-  // ================ API for view
-  ipc.on('view', (event, item, exist) => {
-    if (!exist) {
-      getUi('view', ui => {
-        ui.focus();
-        ui.webContents.send('open', item);
+    ipc.on('theme-changed', (event, iTheme) => {
+      var uiSender = BrowserWindow.fromWebContents(event.sender),
+        uiId = Object.keys(ui).find(id => uiSender === ui[id]);
+      Object.keys(stats).forEach(id => {
+        if (id !== 'ui' && id !== uiId) {
+          if (ui[id]) {
+            ui[id].webContents.send('theme-changed', uiId, iTheme);
+          } else {
+            stats[id].theme = iTheme;
+          }
+        }
       });
-    } else if (ui.view) {
-      ui.view.webContents.send('open', item);
-    }
+    });
+
+    // ================ API for catalog
+    ipc.on('catalog', (event, path) => {
+      getUi('catalog', ui => {
+        ui.focus();
+        ui.webContents.send('open', path);
+      });
+    });
+
+    ipc.on('choose-open-path', () => {
+      getUi('catalog', ui => {
+        ui.webContents.send('choose-open-path');
+      });
+    });
+
+    ipc.on('change-current', (event, prev) => {
+      getUi('catalog', ui => {
+        ui.webContents.send('change-current', prev);
+      });
+    });
+    // ================ /API for catalog
+
+    // ================ API for view
+    ipc.on('view', (event, item, exist) => {
+      if (!exist) {
+        getUi('view', ui => {
+          ui.focus();
+          ui.webContents.send('open', item);
+        });
+      } else if (ui.view) {
+        ui.view.webContents.send('open', item);
+      }
+    });
+    // ================ /API for view
+
+    // Init
+    getUi('catalog', ui => {
+      if (process.argv[2]) {
+        ui.webContents.send('open', process.argv[2]);
+      }
+    }).on('close', () => {
+      // `app.quit()` doesn't wait for closing process of others.
+      if (ui.view) { ui.view.close(); }
+    });
   });
-  // ================ /API for view
 
-  // Init
-  getUi('catalog', ui => {
-    if (process.argv[2]) {
-      ui.webContents.send('open', process.argv[2]);
-    }
-  }).on('close', () => {
-    // `app.quit()` doesn't wait for closing process of others.
-    if (ui.view) { ui.view.close(); }
+  app.on('quit', () => {
+    try {
+      require('fs').writeFileSync(STATS_PATH, JSON.stringify(stats));
+    } catch (error) { /* ignore */ }
   });
-});
 
-app.on('quit', () => {
-  try {
-    require('fs').writeFileSync(STATS_PATH, JSON.stringify(stats));
-  } catch (error) { /* ignore */ }
-});
-
-// This might be needed when running in GUI.
-app.on('window-all-closed', () => { app.quit(); });
+  // This might be needed when running in GUI.
+  app.on('window-all-closed', () => { app.quit(); });
+}
