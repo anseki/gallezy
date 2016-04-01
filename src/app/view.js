@@ -19,8 +19,6 @@ window.addEventListener('load', () => {
     DEFAULT_WIN_RATIO = 3,
     AUTO_INTERVAL = [500, 1000, 3000, 5000, 10000, 15000, 30000, 180000],
     DEFAULT_AUTO_INTERVAL = 2,
-    THEME_CLASS = ['dark', 'light'],
-    DEFAULT_THEME_CLASS = 0,
     WIN_RATIO_BASE_LABEL = {
       none: 'Original Size',
       width: 'Based on Width of Window',
@@ -467,18 +465,7 @@ window.addEventListener('load', () => {
    * @returns {number} theme
    */
   function updateTheme(theme, byMenuValue) {
-    if (theme > THEME_CLASS.length - 1) {
-      theme = THEME_CLASS.length - 1;
-    } else if (theme < 0) {
-      theme = 0;
-    }
-
-    if (theme !== stats.theme) {
-      if (THEME_CLASS[stats.theme]) { $body.removeClass(THEME_CLASS[stats.theme]); }
-      $body.addClass(THEME_CLASS[(stats.theme = theme)]);
-      if (!byMenuValue) { $body.contextMenuCommon('value', 'theme', theme); }
-    }
-    return stats.theme;
+    return general.updateTheme(theme, byMenuValue, stats, $body);
   }
 
   /**
@@ -487,13 +474,7 @@ window.addEventListener('load', () => {
    * @returns {boolean} fullScreen
    */
   function updateFullScreen(fullScreen, byMenuValue) {
-    var curFullScreen = ui.isFullScreen(); // stats is updated by main.js
-    if (fullScreen == null) { fullScreen = !curFullScreen; } // eslint-disable-line eqeqeq
-    if (fullScreen !== curFullScreen) {
-      ui.setFullScreen(fullScreen);
-      if (!byMenuValue) { $body.contextMenuCommon('value', 'fullScreen', fullScreen); }
-    }
-    return fullScreen;
+    return general.updateFullScreen(fullScreen, byMenuValue, $body, ui);
   }
 
   function updatePanelBottom(panelBottom) {
@@ -730,6 +711,8 @@ window.addEventListener('load', () => {
     }
   };
 
+  general.addThemeMenuItems(menuItems.theme.items, commands, stats, $body, ipc);
+
   AUTO_INTERVAL.forEach((autoInterval, i) => {
     menuItems.autoInterval.items[`autoIntervalIndex${i}`] = {
       type: 'radio',
@@ -836,23 +819,6 @@ window.addEventListener('load', () => {
     accesskey: 'a'
   };
 
-  THEME_CLASS.forEach((theme, i) => {
-    var commandId = `themeIndex${i}`;
-    commands[commandId] = {handle: () => {
-      updateTheme(i);
-      ipc.send('theme-changed', i);
-    }};
-    menuItems.theme.items[commandId] = {
-      type: 'radio',
-      radiogroup: 'theme',
-      label: theme,
-      callback: () => {
-        updateTheme(i, true);
-        ipc.send('theme-changed', i);
-      }
-    };
-  });
-
   $(document).keydown(event => {
     if (isBusyOn) { return; }
     if (menuShown) {
@@ -908,8 +874,8 @@ window.addEventListener('load', () => {
     stats.showInfo = updateShowInfo(
       typeof rawStats.showInfo === 'boolean' ? rawStats.showInfo : false);
     stats.theme = updateTheme(
-      typeof rawStats.theme === 'number' && THEME_CLASS[rawStats.theme] ?
-        rawStats.theme : DEFAULT_THEME_CLASS);
+      typeof rawStats.theme === 'number' && general.THEME_CLASS[rawStats.theme] ?
+        rawStats.theme : general.DEFAULT_THEME_CLASS);
     stats.panelBottom = updatePanelBottom(
       typeof rawStats.panelBottom === 'boolean' ? rawStats.panelBottom : false);
   }

@@ -36,8 +36,6 @@ window.addEventListener('load', () => {
     ],
     THUMB_SIZE = [50, 100, 150, 200, 250, 300, 400, 500], // Max: 9 items
     DEFAULT_THUMB_SIZE = 2,
-    THEME_CLASS = ['dark', 'light'],
-    DEFAULT_THEME_CLASS = 0,
     SORT_KEY_LABEL = {
       dirPath: 'Directory Path',
       name: 'File Name',
@@ -189,18 +187,7 @@ window.addEventListener('load', () => {
    * @returns {number} theme
    */
   function updateTheme(theme, byMenuValue) {
-    if (theme > THEME_CLASS.length - 1) {
-      theme = THEME_CLASS.length - 1;
-    } else if (theme < 0) {
-      theme = 0;
-    }
-
-    if (theme !== stats.theme) {
-      if (THEME_CLASS[stats.theme]) { $body.removeClass(THEME_CLASS[stats.theme]); }
-      $body.addClass(THEME_CLASS[(stats.theme = theme)]);
-      if (!byMenuValue) { $body.contextMenuCommon('value', 'theme', theme); }
-    }
-    return stats.theme;
+    return general.updateTheme(theme, byMenuValue, stats, $body);
   }
 
   /**
@@ -209,13 +196,7 @@ window.addEventListener('load', () => {
    * @returns {boolean} fullScreen
    */
   function updateFullScreen(fullScreen, byMenuValue) {
-    var curFullScreen = ui.isFullScreen(); // stats is updated by main.js
-    if (fullScreen == null) { fullScreen = !curFullScreen; } // eslint-disable-line eqeqeq
-    if (fullScreen !== curFullScreen) {
-      ui.setFullScreen(fullScreen);
-      if (!byMenuValue) { $body.contextMenuCommon('value', 'fullScreen', fullScreen); }
-    }
-    return fullScreen;
+    return general.updateFullScreen(fullScreen, byMenuValue, $body, ui);
   }
 
   function open(path) {
@@ -457,6 +438,8 @@ window.addEventListener('load', () => {
     }
   };
 
+  general.addThemeMenuItems(menuItems.theme.items, commands, stats, $body, ipc);
+
   THUMB_SIZE.forEach((size, i) => {
     var commandId = `thumbSizeIndex${i}`;
     commands[commandId] = {
@@ -472,23 +455,6 @@ window.addEventListener('load', () => {
       callback: () => { updateThumbSize(i, true); },
       disabled: () => commandDisabled.thumbSize || !CatalogItem.items.length,
       accesskey: i + 1 + ''
-    };
-  });
-
-  THEME_CLASS.forEach((theme, i) => {
-    var commandId = `themeIndex${i}`;
-    commands[commandId] = {handle: () => {
-      updateTheme(i);
-      ipc.send('theme-changed', i);
-    }};
-    menuItems.theme.items[commandId] = {
-      type: 'radio',
-      radiogroup: 'theme',
-      label: theme,
-      callback: () => {
-        updateTheme(i, true);
-        ipc.send('theme-changed', i);
-      }
     };
   });
 
@@ -559,8 +525,8 @@ window.addEventListener('load', () => {
     stats.showInfo = updateShowInfo(
       typeof rawStats.showInfo === 'boolean' ? rawStats.showInfo : false);
     stats.theme = updateTheme(
-      typeof rawStats.theme === 'number' && THEME_CLASS[rawStats.theme] ?
-        rawStats.theme : DEFAULT_THEME_CLASS);
+      typeof rawStats.theme === 'number' && general.THEME_CLASS[rawStats.theme] ?
+        rawStats.theme : general.DEFAULT_THEME_CLASS);
     stats.lastPath = typeof rawStats.lastPath === 'string' ? rawStats.lastPath : '';
 
     // Sort key and desc
