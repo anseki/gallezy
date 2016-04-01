@@ -13,8 +13,7 @@ const
   META = (() => {
     var META = require('./package.json');
     META.winTitle = {catalog: `Catalog - ${META.productName}`, view: `View - ${META.productName}`};
-    // META.icon = pathUtil.join(__dirname, 'icon.png');
-    META.icon32 = pathUtil.join(__dirname, 'icon-app-32.png');
+    META.icon32 = pathUtil.join(__dirname, 'icon_32x32.png');
     return META;
   })(),
 
@@ -239,8 +238,11 @@ app.on('ready', () => {
   });
 });
 
-app.on('before-quit', () => {
+app.on('quit', () => {
   try {
     require('fs').writeFileSync(STATS_PATH, JSON.stringify(stats));
   } catch (error) { /* ignore */ }
 });
+
+// This might be needed when running in GUI.
+app.on('window-all-closed', () => { app.quit(); });

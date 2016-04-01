@@ -255,8 +255,8 @@ module.exports = grunt => {
     packager({
       dir: WORK_DIR_PATH,
       out: OUT_DIR_PATH,
-      // tmpdir: pathUtil.join(PACKAGE_ROOT_PATH, 'temp/dist'),
       icon: ICON_PATH,
+      // name: PACKAGE_JSON.name, // Executable name that is not productName.
       version: PACKAGE_JSON.electronVersion,
       platform: 'linux,win32,darwin',
       arch: 'all',
@@ -271,8 +271,8 @@ module.exports = grunt => {
         FileVersion: PACKAGE_JSON.version,
         LegalCopyright: `Copyright (C) ${(new Date()).getFullYear()} ${PACKAGE_JSON.author.name}`,
         CompanyName: PACKAGE_JSON.author.name,
-        FileDescription: PACKAGE_JSON.description,
-        OriginalFilename: `${PACKAGE_JSON.productName}.exe`,
+        // This is shown as program name sometimes, don't specify `description`.
+        FileDescription: PACKAGE_JSON.productName,
         ProductName: PACKAGE_JSON.productName,
         InternalName: PACKAGE_JSON.name
       }
@@ -289,6 +289,15 @@ module.exports = grunt => {
   });
 
   grunt.registerTask('archive', function() {
+    function getArchiveBaseName(packagePath) {
+      var name = pathUtil.basename(packagePath)
+        .replace(new RegExp('\\b(?:' +
+          ['productName', 'name'].map(key => PACKAGE_JSON[key].replace(/[\x00-\x7f]/g,
+            s => '\\x' + ('00' + s.charCodeAt().toString(16)).substr(-2))).join('|') +
+          ')[-\._\#\+]*', 'gi'), '');
+      return `${PACKAGE_JSON.name}-${PACKAGE_JSON.version}-${name}`;
+    }
+
     const archiver = require('archiver'),
       rimraf = require('rimraf');
     var done = this.async(), // eslint-disable-line no-invalid-this
@@ -298,17 +307,20 @@ module.exports = grunt => {
       return;
     }
     packages.forEach(packagePath => {
+      var archivePath = pathUtil.join(OUT_DIR_PATH, getArchiveBaseName(packagePath));
       if (/-darwin-/.test(packagePath)) {
         grunt.log.subhead('*'.repeat(60));
-        grunt.log.subhead('This file that may include symlinks has to be archived manually.');
+        grunt.log.writeln('This file that may include symlinks has to be archived manually.');
         grunt.log.subhead(packagePath);
+        grunt.log.writeln(`e.g.\ncd ${OUT_DIR_PATH}\n` +
+          `mv ${pathUtil.basename(packagePath)} ${PACKAGE_JSON.productName}\n` +
+          `tar czvf ${pathUtil.basename(archivePath)}.tar.gz ${PACKAGE_JSON.productName}`);
         grunt.log.subhead('*'.repeat(60));
         if (++count >= packages.length) { done(); }
       } else {
 
         let archive = archiver('zip', {}),
-          archivePath = `${packagePath}.zip`,
-          output = fs.createWriteStream(archivePath);
+          output = fs.createWriteStream((archivePath = `${archivePath}.zip`));
 
         output.on('close', () => {
           grunt.log.writeln(
