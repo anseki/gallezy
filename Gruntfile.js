@@ -16,6 +16,14 @@ module.exports = grunt => {
     OUT_DIR_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'dist'),
     ICON_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'src/app'),
 
+    // Additional files
+    ADD_FILES = [
+      {
+        isTarget: packagePath => /-win32-/.test(packagePath),
+        files: [pathUtil.join(PACKAGE_ROOT_PATH, 'src/ContextMenu.vbs')]
+      }
+    ],
+
     PACKAGE_JSON_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'package.json'),
     PACKAGE_JSON = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH)),
 
@@ -280,9 +288,24 @@ module.exports = grunt => {
       if (error) {
         done(error);
       } else {
+        let addFiles = [];
         packages = appPath;
         grunt.log.writeln('Packages:');
         grunt.log.writeln(packages.join('\n'));
+
+        // Additional files
+        packages.forEach(packagePath => {
+          ADD_FILES.forEach(addFile => {
+            if (addFile.isTarget(packagePath)) {
+              addFiles = addFiles.concat(addFile.files.map(src => ({
+                src: src,
+                dest: pathUtil.join(packagePath, pathUtil.basename(src))
+              })));
+            }
+          });
+        });
+        grunt.config.merge({copy: {addFiles: {files: addFiles}}});
+
         done();
       }
     });
@@ -390,6 +413,7 @@ module.exports = grunt => {
     'taskHelper:copyFiles',
     'copy:copyFiles',
     'package',
+    'copy:addFiles',
     'archive'
   ]);
 };

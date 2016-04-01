@@ -145,11 +145,29 @@ if (app.makeSingleInstance(argv => { // first instance caught the starting a sec
   if (ui.catalog && ui.catalog.ready) {
     if (ui.catalog.isMinimized()) { ui.catalog.restore(); }
     ui.catalog.focus();
-    if (argv[2]) { ui.catalog.webContents.send('open', argv[2]); }
+    /* [DEBUG/]
+    if (argv[1]) { ui.catalog.webContents.send('open', argv[1]); }
+    [DEBUG/] */
+    if (argv[2]) { ui.catalog.webContents.send('open', argv[2]); } // [DEBUG/]
   }
 })) { // second instance
   app.quit();
 } else { // first instance
+
+  app.on('open-file', (event, path) => {
+    event.preventDefault();
+    if (ui.catalog && ui.catalog.ready) {
+      if (ui.catalog.isMinimized()) { ui.catalog.restore(); }
+      ui.catalog.focus();
+      if (path) { ui.catalog.webContents.send('open', path); }
+    } else if (path) {
+      /* [DEBUG/]
+      process.argv[1] = path; // pass to `ui-ready` event
+      [DEBUG/] */
+      process.argv[2] = path; // pass to `ui-ready` event // [DEBUG/]
+    }
+  });
+
   app.on('ready', () => {
     stats = loadStats();
     electron.Menu.setApplicationMenu(null);
@@ -239,9 +257,16 @@ if (app.makeSingleInstance(argv => { // first instance caught the starting a sec
 
     // Init
     getUi('catalog', ui => {
+      /* [DEBUG/]
+      if (process.argv[1]) {
+        ui.webContents.send('open', process.argv[1]);
+      }
+      [DEBUG/] */
+      // [DEBUG]
       if (process.argv[2]) {
         ui.webContents.send('open', process.argv[2]);
       }
+      // [/DEBUG]
     }).on('close', () => {
       // `app.quit()` doesn't wait for closing process of others.
       if (ui.view) { ui.view.close(); }
