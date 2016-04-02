@@ -231,7 +231,8 @@ window.addEventListener('load', () => {
         // Since `clear` make selected item be null, `addFiles` select 1st item.
         $body.plainOverlay('scrollLeft', 0).plainOverlay('scrollTop', 0); // before clear
         CatalogItem.clear();
-        CatalogItem.addFiles(files, path, true, () => { busy(false); });
+        CatalogItem.addFiles(
+          files, path, THUMB_SIZE[THUMB_SIZE.length - 1], true, () => { busy(false); });
 
         stats.lastPath = path;
       },

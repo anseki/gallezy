@@ -184,39 +184,41 @@ CatalogItem.prototype.select = function(ignoreView) {
   return this;
 };
 
-CatalogItem.prototype.load = function(bOn, cbLoaded) {
+CatalogItem.prototype.load = function(bOn, url, orgWidth, orgHeight, cbLoaded) {
   var that = this;
 
   function done(event) {
     that.$img.off('load error', done); // similar to `one()`, but it catches both event types.
     if (event.type === 'load') {
       that.loaded = true;
-      that.width = that.sortKeys.width = that.$img.width();
-      that.height = that.sortKeys.height = that.$img.height();
-      that.sortKeys.area = that.width * that.height;
+      that.width = that.sortKeys.width = orgWidth;
+      that.height = that.sortKeys.height = orgHeight;
+      that.sortKeys.area = orgWidth * orgHeight;
       that.$area.html(`<span>${general.numToString(that.width)} x</span>` +
         `<span>${general.numToString(that.height)} px</span>`);
     } else {
-      console.error('[ERROR] %s', that.path); // Is there no way to get an error information?
-      that.error = true;
-      that.width = that.height = that.sortKeys.width = that.sortKeys.height = that.sortKeys.area = 0;
-      that.$area.html('<span>0 x</span><span>0 px</span>');
-      that.$img.attr('src', ERROR_IMG_URL);
+      that.setError();
     }
     that.finished = true;
-    that.$elm.removeClass('loading');
-    if (cbLoaded) { cbLoaded(that); }
+    if (cbLoaded) { cbLoaded(that, url); }
   }
 
   that.loaded = that.error = that.finished = false;
   if (bOn) {
     that.$img.on('load error', done);
-    that.$elm.addClass('loading');
-    that.$img.attr('src', that.url);
+    that.$img.attr('src', url);
   } else {
     that.$img.attr('src', '');
   }
   return that;
+};
+
+CatalogItem.prototype.setError = function() {
+  console.error('[ERROR] %s', this.path); // Is there no way to get an error information?
+  this.error = true;
+  this.width = this.height = this.sortKeys.width = this.sortKeys.height = this.sortKeys.area = 0;
+  this.$area.html('<span>0 x</span><span>0 px</span>');
+  this.$img.attr('src', ERROR_IMG_URL);
 };
 
 CatalogItem.setThumbSize = size => {
@@ -254,31 +256,78 @@ CatalogItem.clear = () => {
   selectedItem = null;
 };
 
-CatalogItem.addFiles = (files, basePath, ignoreView, cbDone) => {
-  var i = -1, loadingItems = 0, iMax;
+CatalogItem.addFiles = (files, basePath, maxThumbSize, ignoreView, cbDone) => {
+  var iItem = items.length - 1, lenItems,
+    loadingItems = 0, loadedItems = items.length, buffers = [], iBuffer;
 
   function loadItems() {
-    var count = 0;
-    function itemLoaded() {
-      if (--loadingItems <= 0) {
-        if (i >= iMax) {
-          CatalogItem.sort(null, null, ignoreView);
-          cbDone();
-        } else {
-          loadItems();
-        }
-      }
-    }
-    while (++count <= SHEAF_LOAD_ITEMS && ++i <= iMax) {
-      items[i].load(true, itemLoaded);
+    iBuffer = -1;
+    while (++iBuffer < SHEAF_LOAD_ITEMS && ++iItem < lenItems) {
+      buffers[iBuffer].img.item = items[iItem]; // ref
+      buffers[iBuffer].img.src = items[iItem].url;
       loadingItems++;
     }
+  }
+
+  function itemLoaded(item, url) {
+    URL.revokeObjectURL(url);
+    loadedItems++;
+    if (--loadingItems <= 0) {
+      if (loadedItems >= lenItems) {
+        buffers.forEach(buffer => { buffer.img = buffer.canvas = buffer.ctx = null; });
+        buffers = null;
+        window.gc();
+        CatalogItem.sort(null, null, ignoreView);
+        cbDone();
+      } else {
+        loadItems();
+      }
+    }
+  }
+
+  function imgLoaded(event) {
+    var img = event.target,
+      canvas = img.buffer.canvas,
+      ctx = img.buffer.ctx,
+      item = img.item,
+      orgWidth = img.width, orgHeight = img.height,
+      ratio = maxThumbSize / Math.max(orgWidth, orgHeight),
+      thumbWidth = orgWidth * ratio,
+      thumbHeight = orgHeight * ratio;
+
+    canvas.width = thumbWidth;
+    canvas.height = thumbHeight;
+    ctx.clearRect(0, 0, thumbWidth, thumbHeight);
+    ctx.drawImage(img, 0, 0, thumbWidth, thumbHeight);
+    canvas.toBlob(blob => {
+      item.load(true, URL.createObjectURL(blob), orgWidth, orgHeight, itemLoaded);
+    });
+  }
+
+  function imgError(event) {
+    event.target.item.setError();
   }
 
   basePath = pathUtil.resolve(basePath);
   files.forEach(
     stats => { items.push((new CatalogItem(stats, basePath)).setThumbSize(thumbSize)); });
-  iMax = items.length - 1;
+  lenItems = items.length;
+  {
+    let i;
+    for (i = 0; i < SHEAF_LOAD_ITEMS; i++) {
+      let img = new Image(),
+        canvas = document.createElement('canvas'),
+        ctx = canvas.getContext('2d');
+      buffers[i] = {
+        img: img,
+        canvas: canvas,
+        ctx: ctx
+      };
+      img.buffer = buffers[i]; // ref
+      img.addEventListener('load', imgLoaded, false);
+      img.addEventListener('error', imgError, false);
+    }
+  }
   loadItems();
 };
 

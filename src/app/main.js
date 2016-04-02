@@ -154,6 +154,9 @@ if (app.makeSingleInstance(argv => { // first instance caught the starting a sec
   app.quit();
 } else { // first instance
 
+  app.commandLine.appendSwitch('enable-experimental-canvas-features');
+  app.commandLine.appendSwitch('js-flags', '--expose-gc');
+
   app.on('open-file', (event, path) => {
     event.preventDefault();
     if (ui.catalog && ui.catalog.ready) {
