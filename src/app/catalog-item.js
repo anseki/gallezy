@@ -219,6 +219,7 @@ CatalogItem.prototype.setError = function() {
   this.width = this.height = this.sortKeys.width = this.sortKeys.height = this.sortKeys.area = 0;
   this.$area.html('<span>0 x</span><span>0 px</span>');
   this.$img.attr('src', ERROR_IMG_URL);
+  return this;
 };
 
 CatalogItem.setThumbSize = size => {
@@ -270,7 +271,7 @@ CatalogItem.addFiles = (files, basePath, maxThumbSize, ignoreView, cbDone) => {
   }
 
   function itemLoaded(item, url) {
-    URL.revokeObjectURL(url);
+    if (url) { URL.revokeObjectURL(url); }
     loadedItems++;
     if (--loadingItems <= 0) {
       if (loadedItems >= lenItems) {
@@ -305,7 +306,9 @@ CatalogItem.addFiles = (files, basePath, maxThumbSize, ignoreView, cbDone) => {
   }
 
   function imgError(event) {
-    event.target.item.setError();
+    var item = event.target.item;
+    item.setError().finished = true;
+    itemLoaded(item);
   }
 
   basePath = pathUtil.resolve(basePath);
