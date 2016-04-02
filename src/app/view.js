@@ -299,9 +299,10 @@ window.addEventListener('load', () => {
         ` ${curSizeProps.unscaleHeight = sizeProps.unscaleHeight}`);
       bBoxPad.setAttribute('width', sizeProps.unscaleWidth);
       bBoxPad.setAttribute('height', sizeProps.unscaleHeight);
-      // force reflow, for width/height: `auto`.
+      // force reflow, for `width/height:auto`.
+      // and changing `display` is needed to resize parent after reflow.
       $bBoxPad.css('display', 'none');
-      bBoxPad.offsetWidth; // eslint-disable-line no-unused-expressions
+      bBoxPad.scrollTop; // eslint-disable-line no-unused-expressions
       $bBoxPad.css('display', '');
       viewResized = true;
     }
