@@ -122,6 +122,16 @@ $item-border-width: 3px;
   }
 }
 
+#progress {
+  display: none;
+  &.show { display: block; }
+  position: fixed;
+  left: 5px;
+  top: 3px;
+  color: #8e8e8e;
+  @include font-rem-by-px(14);
+}
+
 #empty {
   padding-top: 120px;
   color: #8e8e8e;

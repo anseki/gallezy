@@ -8,7 +8,7 @@ const $ = window.$ || window.jQuery,
   SCROLL_DUR = 200,
   TOLERANCE = 10, // for calculated position by browser
   LAZY_RESIZE_TIME = 300,
-  SHEAF_LOAD_ITEMS = 5,
+  SHEAF_LOAD_ITEMS = 16,
   DEFAULT_SORT_BY = [
     {key: 'dirPath', desc: false},
     {key: 'name', desc: false},
@@ -258,12 +258,13 @@ CatalogItem.clear = () => {
 };
 
 CatalogItem.addFiles = (files, basePath, maxThumbSize, ignoreView, cbDone) => {
-  var iItem = items.length - 1, lenItems,
-    loadingItems = 0, loadedItems = items.length, buffers = [], iBuffer;
+  const LEN_ITEMS_BEFORE = items.length;
+  var iItem = LEN_ITEMS_BEFORE - 1, lenItemsAfter,
+    loadingItems = 0, loadedItems = LEN_ITEMS_BEFORE, buffers = [], iBuffer, $progress;
 
   function loadItems() {
     iBuffer = -1;
-    while (++iBuffer < SHEAF_LOAD_ITEMS && ++iItem < lenItems) {
+    while (++iBuffer < SHEAF_LOAD_ITEMS && ++iItem < lenItemsAfter) {
       buffers[iBuffer].img.item = items[iItem]; // ref
       buffers[iBuffer].img.src = items[iItem].url;
       loadingItems++;
@@ -273,12 +274,15 @@ CatalogItem.addFiles = (files, basePath, maxThumbSize, ignoreView, cbDone) => {
   function itemLoaded(item, url) {
     if (url) { URL.revokeObjectURL(url); }
     loadedItems++;
+    $progress.text(`${Math.round(
+      (loadedItems - LEN_ITEMS_BEFORE) / (lenItemsAfter - LEN_ITEMS_BEFORE) * 100)}%`);
     if (--loadingItems <= 0) {
-      if (loadedItems >= lenItems) {
+      if (loadedItems >= lenItemsAfter) {
         buffers.forEach(buffer => { buffer.img = buffer.canvas = buffer.ctx = null; });
         buffers = null;
         window.gc();
         CatalogItem.sort(null, null, ignoreView);
+        $progress.removeClass('show');
         cbDone();
       } else {
         loadItems();
@@ -314,7 +318,7 @@ CatalogItem.addFiles = (files, basePath, maxThumbSize, ignoreView, cbDone) => {
   basePath = pathUtil.resolve(basePath);
   files.forEach(
     stats => { items.push((new CatalogItem(stats, basePath)).setThumbSize(thumbSize)); });
-  lenItems = items.length;
+  lenItemsAfter = items.length;
   {
     let i;
     for (i = 0; i < SHEAF_LOAD_ITEMS; i++) {
@@ -331,6 +335,7 @@ CatalogItem.addFiles = (files, basePath, maxThumbSize, ignoreView, cbDone) => {
       img.addEventListener('error', imgError, false);
     }
   }
+  $progress = $('#progress').text('0%').addClass('show');
   loadItems();
 };
 
