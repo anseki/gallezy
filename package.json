@@ -1,8 +1,8 @@
 {
   "name": "gallezy",
   "productName": "Gallezy",
-  "version": "0.0.1",
-  "description": "Super Simple Image Gallery App",
+  "version": "0.0.1-1",
+  "description": "Super Simple Image Gallery App http://anseki.github.io/gallezy/",
   "keywords": [
     "electron-app",
     "electron",
@@ -35,7 +35,7 @@
     "lodash": "^4.6.1",
     "rimraf": "^2.5.2"
   },
-  "homepage": "https://github.com/anseki/gallezy",
+  "homepage": "http://anseki.github.io/gallezy/",
   "repository": {
     "type": "git",
     "url": "git://github.com/anseki/gallezy.git"
