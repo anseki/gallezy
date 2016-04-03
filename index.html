@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Super Simple Image Gallery App">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/syntax.css">
+  <link rel="stylesheet" href="css/default.css">
+  <link href="css/fix.css" rel="stylesheet">
+
+  <title>Gallezy</title>
+</head>
+<body>
+  <header>
+    <h1><a href="./">Gallezy</a></h1>
+    <ul id="gh"><li><a href="#download">Download</a></li><li><a href="https://github.com/anseki/gallezy">View on GitHub</a></li></ul>
+  </header>
+  <main>
+
+<p id="description">Super Simple Image Gallery App</p>
+
+<p><img src="img/ss01.png" alt="ss01"></p>
+
+<ul>
+<li>You have to learn nothing to use Gallezy.</li>
+<li>You have to configure nothing for Gallezy.</li>
+</ul>
+
+<p>You can operate all of Gallezy by context menu.</p>
+
+<h2 id="download">Download</h2>
+
+<ul>
+<li><a href="https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.1-win32-x64.zip">Windows x64</a></li>
+<li><a href="https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.1-win32-ia32.zip">Windows ia32</a></li>
+<li><a href="https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.1-darwin-x64.tar.gz">OS X</a></li>
+<li><a href="https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.1-linux-x64.zip">Linux x64</a></li>
+<li><a href="https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.1-linux-ia32.zip">Linux ia32</a></li>
+<li><a href="https://github.com/anseki/gallezy/raw/master/dist/SHASUMS256.txt">Checksum</a></li>
+</ul>
+
+<p>Since these don&#39;t have code signing, you should check a <a href="https://github.com/anseki/gallezy/raw/master/dist/SHASUMS256.txt">checksum</a>.</p>
+
+<h2 id="install">Install</h2>
+
+<p>Extract a <code>Gallezy</code> folder from a downloaded file, and save it into your hard disk.<br>For Windows, you can add a command into context menu of Windows Explorer by double-clicking a file <code>ContextMenu.vbs</code> in the <code>Gallezy</code> folder, <em>after</em> saving it.</p>
+
+<h2 id="start-gallezy">Start Gallezy</h2>
+
+<p>Open a file in the <code>Gallezy</code> folder you saved:</p>
+
+<ul>
+<li><code>Gallezy.exe</code> on Windows</li>
+<li><code>Gallezy.app</code> on OS X</li>
+<li><code>Gallezy</code> on Linux</li>
+</ul>
+
+<p>Or drag-and-drop a target folder that contains image files onto a Gallezy icon.<br>Or right-click the target folder, and select a <code>Open with Gallezy</code> command in context menu, or press <code>Z</code> key.<br>After starting, you can also open the target folder by dropping the folder onto a Gallezy window or its icon, or pressing <code>Ctrl+O</code> keys.</p>
+
+<h2 id="uninstall">Uninstall</h2>
+
+<p>If you added a command into context menu of Windows Explorer, double-click a file <code>ContextMenu.vbs</code> to remove the command.<br>Remove two folders the <code>Gallezy</code> folder you saved and:</p>
+
+<ul>
+<li><code>%APPDATA%\Gallezy</code> folder on Windows</li>
+<li><code>~/Library/Application Support/Gallezy</code> folder on OS X</li>
+<li><code>$XDG_CONFIG_HOME/Gallezy</code> or <code>~/.config/Gallezy</code> folder on Linux</li>
+</ul>
+
+  </main>
+  <footer>
+    <p class="copyright">Gallezy maintained by <a href="https://github.com/anseki">anseki</a></p>
+  </footer>
+
+</body>
+</html>
