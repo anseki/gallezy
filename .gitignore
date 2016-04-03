@@ -1,8 +1,2 @@
 .sass-cache
 .vscode
-node_modules
-temp
-*.asar
-stats.json
-src/**/*.css
-src/custom-lib/dist/font/*
