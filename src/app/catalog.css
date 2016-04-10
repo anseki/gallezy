@@ -1,0 +1,177 @@
+/* line 7, catalog.scss */
+#container.list {
+  box-sizing: border-box;
+  padding: 1px;
+}
+
+/* line 12, catalog.scss */
+.item {
+  border: 3px solid transparent;
+  position: relative;
+}
+/* line 14, catalog.scss */
+.item.selected {
+  border-color: #1f67fd;
+}
+/* line 18, catalog.scss */
+.item.loading img {
+  position: absolute;
+  left: 110%;
+}
+/* line 23, catalog.scss */
+.item .label {
+  line-height: 1;
+  cursor: pointer;
+  font-size: 16px;
+  font-size: 1.6rem;
+  word-break: break-all;
+}
+/* line 30, catalog.scss */
+#container:not(.list) .item {
+  display: inline-block;
+  margin: 10px;
+  overflow: hidden;
+}
+/* line 35, catalog.scss */
+#container:not(.list) .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+}
+/* line 42, catalog.scss */
+#container:not(.list) .item.loading img {
+  width: auto;
+  height: auto;
+}
+/* line 47, catalog.scss */
+#container:not(.list) .item .label {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2px;
+  transition: transform 0.08s linear;
+  transform: translateY(100%);
+}
+/* line 54, catalog.scss */
+#container:not(.list) .item .label.small {
+  font-size: 11px;
+  font-size: 1.1rem;
+}
+/* line 61, catalog.scss */
+#container:not(.list) .item:hover .label {
+  transform: translateY(0);
+}
+/* line 66, catalog.scss */
+#container:not(.list) .item .info {
+  display: none;
+}
+/* line 69, catalog.scss */
+#container:not(.list).show-info .item .label {
+  transform: translateY(0);
+}
+/* line 74, catalog.scss */
+#container.list .item {
+  display: flex;
+  margin: 3px;
+}
+/* line 78, catalog.scss */
+#container.list .item img {
+  display: none;
+}
+/* line 79, catalog.scss */
+#container.list .item.loading img {
+  display: block;
+}
+/* line 81, catalog.scss */
+#container.list .item .label {
+  flex-grow: 1;
+  min-width: 5ch;
+  padding: 2px 0 5px 2px;
+  border-bottom: 1px solid;
+  white-space: pre-wrap;
+}
+/* line 92, catalog.scss */
+#container.list .item .info {
+  cursor: pointer;
+  border-bottom: 1px solid;
+  font-size: 12.8px;
+  font-size: 1.28rem;
+  white-space: nowrap;
+  padding: 0.5ex 2ch 0 2px;
+}
+/* line 101, catalog.scss */
+#container.list .item .info:last-of-type {
+  padding-right: 2px;
+}
+/* line 103, catalog.scss */
+#container.list .item .info > span {
+  display: inline-block;
+}
+/* line 106, catalog.scss */
+#container.list .item .info.size span:nth-of-type(1) {
+  min-width: 3ch;
+  text-align: right;
+}
+/* line 110, catalog.scss */
+#container.list .item .info.size span:nth-of-type(2) {
+  min-width: 2ch;
+  /* from bytesToString() */
+}
+/* line 111, catalog.scss */
+#container.list .item .info.size span:nth-of-type(3) {
+  min-width: 2ch;
+}
+/* line 115, catalog.scss */
+#container.list .item .info.area span {
+  text-align: right;
+}
+/* line 117, catalog.scss */
+#container.list .item .info.area span:nth-of-type(1) {
+  min-width: 7ch;
+}
+/* line 118, catalog.scss */
+#container.list .item .info.area span:nth-of-type(2) {
+  min-width: 8ch;
+}
+
+/* line 125, catalog.scss */
+#progress {
+  display: none;
+  position: fixed;
+  left: 5px;
+  top: 3px;
+  color: #8e8e8e;
+  font-size: 14px;
+  font-size: 1.4rem;
+}
+/* line 127, catalog.scss */
+#progress.show {
+  display: block;
+}
+
+/* line 135, catalog.scss */
+#empty {
+  padding-top: 120px;
+  color: #8e8e8e;
+  text-align: center;
+  cursor: default;
+  font-size: 18px;
+  font-size: 1.8rem;
+}
+@media screen and (min-width: 480px) {
+  /* line 135, catalog.scss */
+  #empty {
+    font-size: 22px;
+    font-size: 2.2rem;
+  }
+}
+@media screen and (min-width: 768px) {
+  /* line 135, catalog.scss */
+  #empty {
+    font-size: 32px;
+    font-size: 3.2rem;
+  }
+}

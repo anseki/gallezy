@@ -1,0 +1,6 @@
+.sass-cache/**
+node_modules/**
+temp/**
+.gitignore
+.npmignore
+.stylelintrc

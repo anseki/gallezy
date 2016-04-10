@@ -1,0 +1,143 @@
+/* line 8, view.scss */
+#container {
+  display: inline-flex;
+  vertical-align: top;
+  justify-content: center;
+  align-items: center;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* line 17, view.scss */
+#bound-box {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+  line-height: 0;
+  position: relative;
+}
+/* line 25, view.scss */
+#bound-box img {
+  position: absolute;
+  top: -100%;
+  right: -100%;
+  bottom: -100%;
+  left: -100%;
+  margin: auto;
+}
+/* line 33, view.scss */
+#bound-box img:not(.effect-disabled) {
+  transition: transform 0.2s linear;
+}
+
+/* line 39, view.scss */
+#panel {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  min-height: 80px;
+}
+/* line 45, view.scss */
+#panel:not(.bottom) {
+  top: 0;
+}
+/* line 47, view.scss */
+#panel:not(.bottom) #panel-content {
+  transform: translateY(-100%);
+}
+/* line 50, view.scss */
+#panel.bottom {
+  bottom: 0;
+  white-space: nowrap;
+}
+/* line 52, view.scss */
+#panel.bottom #info {
+  align-items: flex-end;
+}
+/* line 54, view.scss */
+#panel.bottom #bottom-button svg {
+  transform: scaleY(-1) translateY(2px);
+}
+/* line 61, view.scss */
+#panel.bottom::before {
+  content: "";
+  vertical-align: bottom;
+  display: inline-block;
+  width: 0;
+  height: 80px;
+}
+/* line 69, view.scss */
+#panel.bottom #panel-content {
+  transform: translateY(100%);
+  display: inline-block;
+  width: 100%;
+  position: relative;
+  padding-bottom: 5px;
+}
+/* line 78, view.scss */
+#panel.bottom #progress-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+/* line 86, view.scss */
+#panel-content {
+  transition: transform 0.08s linear;
+}
+/* line 89, view.scss */
+#panel:hover #panel-content, #panel.show-info #panel-content {
+  transform: translateY(0);
+}
+
+/* line 95, view.scss */
+#progress-bar {
+  height: 5px;
+  background-color: #1f67fd;
+}
+
+/* line 100, view.scss */
+#info {
+  display: flex;
+}
+/* line 103, view.scss */
+#info > div {
+  font-size: 12.8px;
+  font-size: 1.28rem;
+  white-space: nowrap;
+  padding: 2px 2ch 2px 2px;
+  cursor: default;
+}
+/* line 107, view.scss */
+#info > div:last-of-type {
+  padding-right: 2px;
+}
+/* line 111, view.scss */
+#info #label {
+  flex-grow: 1;
+  min-width: 5ch;
+  padding: 2px;
+  line-height: 1;
+  font-size: 16px;
+  font-size: 1.6rem;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+/* line 122, view.scss */
+#info #bottom-button {
+  flex-shrink: 0;
+  width: 1.28rem;
+  height: 1.28rem;
+  padding-right: 5px;
+  cursor: pointer;
+}
+/* line 129, view.scss */
+#info #bottom-button svg {
+  width: 100%;
+  height: 100%;
+}
+/* line 133, view.scss */
+#info #bottom-button:hover svg {
+  fill: #1f67fd;
+}

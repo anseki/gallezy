@@ -1,0 +1,9 @@
+/* line 3, general-theme.scss */
+body.dark {
+  background-color: #38383a;
+}
+
+/* line 7, general-theme.scss */
+body.light {
+  background-color: #eff2ea;
+}

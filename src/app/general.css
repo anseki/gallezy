@@ -1,0 +1,28 @@
+/* line 103, ../../../../../WEB/template_normal/lib/_common.scss */
+html {
+  font-size: 62.5%;
+}
+
+/* line 6, general.scss */
+html,
+body {
+  height: 100%;
+}
+
+/* line 9, general.scss */
+body {
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  margin: 0;
+  /* stylelint-disable value-list-comma-newline-after, comment-empty-line-before  */
+  font-family: Verdana, Helvetica, Arial, "Meiryo UI", "Meiryo", "Hiragino Kaku Gothic Pro", "HiraKakuProN-W3", "Malgun Gothic", "Gulim", "Apple Gothic", "Microsoft Yahei", "PingHei", "SimSun", "Song", "PMingLiU", "Apple LiSung", "Simplified Arabic", "Lucid Grande", sans-serif;
+  /* stylelint-enable value-list-comma-newline-after, comment-empty-line-before */
+}
+
+/* line 31, general.scss */
+.context-menu-list {
+  font-size: 16px;
+  font-size: 1.6rem;
+}

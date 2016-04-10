@@ -1,0 +1,25 @@
+/* line 4, view-theme.scss */
+body.dark #panel-content {
+  background-color: rgba(56, 56, 58, 0.8);
+}
+/* line 5, view-theme.scss */
+body.dark #info {
+  color: #b1b1b1;
+}
+/* line 6, view-theme.scss */
+body.dark #bottom-button svg {
+  fill: #b1b1b1;
+}
+
+/* line 10, view-theme.scss */
+body.light #panel-content {
+  background-color: rgba(239, 242, 234, 0.8);
+}
+/* line 11, view-theme.scss */
+body.light #info {
+  color: #696969;
+}
+/* line 12, view-theme.scss */
+body.light #bottom-button svg {
+  fill: #696969;
+}

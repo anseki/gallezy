@@ -11,15 +11,15 @@ Set shell = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
 Set shellApp = Wscript.CreateObject("Shell.Application")
 
+' Run by WScript / Run as admin
+If Right(LCase(WScript.FullName), 12) = "\cscript.exe" Or Wscript.Arguments.Count = 0 Then
+  shellApp.ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ runas", "", "runas", 1
+  WScript.Quit()
+End If
+
 path = fso.GetFile(WScript.ScriptFullName).ParentFolder.Path & "\" & FILE_NAME
 keyDir = "HKCR\Directory\shell\" & APP_NAME
 keyDrv = "HKCR\Drive\shell\" & APP_NAME
-
-' Run by WScript / Run as admin
-If Right(LCase(WScript.FullName), 12) = "\cscript.exe" Or Wscript.Arguments.Count = 0 Then
-  shellApp.ShellExecute "wscript.exe", WScript.ScriptFullName & " runas", "", "runas", 1
-  WScript.Quit()
-End If
 
 If Not fso.FileExists(path) Then
   MsgBox "Not Found File: " & path, vbCritical, APP_NAME
@@ -34,7 +34,8 @@ End If
 On Error Goto 0
 
 If keyExists Then msg = "Unregister " Else msg = "Register "
-If MsgBox(msg & APP_NAME & "." & vbCrLf & "Continue?", vbYesNo + vbQuestion, APP_NAME) <> vbYes Then
+If MsgBox(msg & APP_NAME & " with context menu." & vbCrLf & "Continue?", _
+    vbYesNo + vbQuestion, APP_NAME) <> vbYes Then
   WScript.Quit(1)
 End If
 

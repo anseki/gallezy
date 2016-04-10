@@ -1,0 +1,37 @@
+/* line 5, catalog-theme.scss */
+body.dark #container:not(.list) .item .label {
+  color: #b1b1b1;
+  background-color: rgba(56, 56, 58, 0.8);
+}
+/* line 12, catalog-theme.scss */
+body.dark #container.list .item .label {
+  color: #a2a2a2;
+}
+/* line 13, catalog-theme.scss */
+body.dark #container.list .item .info {
+  color: #8e8e8e;
+}
+/* line 15, catalog-theme.scss */
+body.dark #container.list .item .label,
+body.dark #container.list .item .info {
+  border-bottom-color: #444;
+}
+
+/* line 22, catalog-theme.scss */
+body.light #container:not(.list) .item .label {
+  color: #696969;
+  background-color: rgba(239, 242, 234, 0.8);
+}
+/* line 29, catalog-theme.scss */
+body.light #container.list .item .label {
+  color: #8e8e8e;
+}
+/* line 30, catalog-theme.scss */
+body.light #container.list .item .info {
+  color: #999;
+}
+/* line 32, catalog-theme.scss */
+body.light #container.list .item .label,
+body.light #container.list .item .info {
+  border-bottom-color: #dedede;
+}
