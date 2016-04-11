@@ -9,37 +9,23 @@ module.exports = grunt => {
     htmlclean = require('htmlclean'),
     CleanCSS = require('clean-css'),
 
-    PACKAGE_ROOT_PATH = __dirname,
+    ROOT_PATH = __dirname,
+    SRC_PATH = pathUtil.join(ROOT_PATH, 'src'),
+    WORK_PATH = pathUtil.join(ROOT_PATH, 'temp'),
+    DIST_PATH = pathUtil.join(ROOT_PATH, 'dist'),
 
-    SRC_DIR_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'src/app'),
-    WORK_DIR_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'temp/app'),
-    OUT_DIR_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'dist'),
-    ICON_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'src/app'),
+    APP_PATH = pathUtil.join(SRC_PATH, 'app'),
+    WORK_APP_PATH = pathUtil.join(WORK_PATH, 'app'),
 
-    // Additional files
-    ADD_FILES = [
-      {
-        isTarget: packagePath => /-win32-/.test(packagePath),
-        files: [pathUtil.join(PACKAGE_ROOT_PATH, 'src/ContextMenu.vbs')]
-      }
-    ],
-
-    PACKAGE_JSON_PATH = pathUtil.join(PACKAGE_ROOT_PATH, 'package.json'),
+    PACKAGE_JSON_PATH = pathUtil.join(ROOT_PATH, 'package.json'),
     PACKAGE_JSON = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH)),
 
-    BUNDLE_ID = 'io.github.anseki.gallezy',
-
-    SRC_ASSETS = filelist.getSync(SRC_DIR_PATH, {
-      filter: stats =>
-        stats.isFile() &&
-        !/^\./.test(stats.name) &&
-        !/\.scss$/.test(stats.name) &&
-        !/\.html$/.test(stats.name) &&
-        stats.name !== 'package.json',
+    TXT_APP_ASSETS = filelist.getSync(APP_PATH, {
+      filter: stats => stats.isFile() && /\.(?:css|js|svg)$/.test(stats.name),
       listOf: 'fullPath'
     }),
 
-    UNPACK_ASSETS = [
+    SHARE_ASSETS = [
       'src/custom-lib/dist/jquery.contextMenu.min.css',
       'src/app/general.css',
       'src/app/general-theme.css',
@@ -49,36 +35,53 @@ module.exports = grunt => {
       'node_modules/jquery-contextmenu-common/dist/fixed/jquery.contextMenu.min.js',
       'node_modules/jquery-contextmenu-common/dist/jquery.contextMenuCommon.min.css',
       'node_modules/jquery-contextmenu-common/dist/jquery.contextMenuCommon.min.js'
-    ].map(path => pathUtil.join(PACKAGE_ROOT_PATH, path)),
+    ].map(path => pathUtil.join(ROOT_PATH, path)),
 
-    EXT_ASSETS = [
+    // node_modules that are referred or embedded. i.e. These are not copied into node_modules.
+    EXPAND_MODULES =
+      ['electron-prebuilt', 'jquery', 'jquery-contextmenu-common', 'jquery-plainoverlay'],
+
+    EXT_BIN_FILES = [
       {
-        expand: true,
-        cwd: pathUtil.join(PACKAGE_ROOT_PATH, 'src/custom-lib/dist/'),
-        src: 'font/**',
-        dest: `${WORK_DIR_PATH}/`
+        src: PACKAGE_JSON_PATH,
+        dest: pathUtil.join(WORK_APP_PATH, 'package.json')
       },
       {
         expand: true,
-        cwd: pathUtil.join(PACKAGE_ROOT_PATH, 'node_modules/jquery-contextmenu-common/dist/'),
+        cwd: pathUtil.join(SRC_PATH, 'custom-lib/dist/'),
         src: 'font/**',
-        dest: `${WORK_DIR_PATH}/`
+        dest: `${WORK_APP_PATH}/`
+      },
+      {
+        expand: true,
+        cwd: pathUtil.join(ROOT_PATH, 'node_modules/jquery-contextmenu-common/dist/'),
+        src: 'font/**',
+        dest: `${WORK_APP_PATH}/`
       }
-    ]
-    // `dependencies` in `package.json`
-    .concat(Object.keys(PACKAGE_JSON.dependencies).map(dependency => ({
-      expand: true,
-      cwd: PACKAGE_ROOT_PATH,
-      src: `node_modules/${dependency}/**`,
-      dest: `${WORK_DIR_PATH}/`
-    })));
+    ],
 
-  var excludeSrcAssets = [], copiedAssets = [], protectedText = [], packages;
+    // Additional files in each package
+    PACK_ADD_FILES = [
+      {
+        isTarget: packagePath => /-win32-/.test(packagePath),
+        files: [pathUtil.join(SRC_PATH, 'ContextMenu.vbs')]
+      }
+    ],
 
-  function productSrc(src) {
-    return src
+    ICON_PATH = pathUtil.join(SRC_PATH, 'app'),
+    BUNDLE_ID = 'io.github.anseki.gallezy';
+
+  var embeddedAssets = [], referredAssets = [],
+    protectedText = [], packages;
+
+  function productSrc(content) {
+    return content
       .replace(/[^\n]*\[DEBUG\/\][^\n]*\n?/g, '')
       .replace(/[^\n]*\[DEBUG\][\s\S]*?\[\/DEBUG\][^\n]*\n?/g, '');
+  }
+
+  function removeBanner(content) { // remove it to embed
+    return content.replace(/^\s*(?:\/\*[\s\S]*?\*\/\s*)+/, '');
   }
 
   function minCss(content) {
@@ -92,7 +95,8 @@ module.exports = grunt => {
       .replace(/((?:^|\n)[^\n\'\"\`\/]*?)\/\/[^\n\[\]]*(?=\n|$)/g, '$1') // safe
       .replace(/(^|\n)[ \t]+/g, '$1')
       .replace(/[ \t]+($|\n)/g, '$1')
-      .replace(/\n{2,}/g, '\n');
+      .replace(/\n{2,}/g, '\n')
+      .replace(/^\s+|\s+$/g, '');
   }
 
   function addProtectedText(text) {
@@ -121,7 +125,7 @@ module.exports = grunt => {
     clean: {
       workDir: {
         options: {force: true},
-        src: [`${WORK_DIR_PATH}/**/*`, `${OUT_DIR_PATH}/**/*`]
+        src: [`${WORK_APP_PATH}/**/*`, `${DIST_PATH}/**/*`]
       }
     },
 
@@ -131,67 +135,52 @@ module.exports = grunt => {
           handlerByContent: content => {
             function getContent(path) {
               var content;
-              if (path.indexOf(SRC_DIR_PATH) !== 0) {
-                grunt.log.writeln(`File doesn't exist in src dir: ${path}`);
-              } else if (!fs.existsSync(path)) {
+              if (!fs.existsSync(path)) {
                 grunt.fail.fatal(`File doesn't exist: ${path}`);
               }
-              content = fs.readFileSync(path, {encoding: 'utf8'}).trim();
+              content = removeBanner(fs.readFileSync(path, {encoding: 'utf8'})).trim();
               if (/\f|\x07/.test(content)) {
                 grunt.fail.fatal(`\\f or \\x07 that is used as marker is included: ${path}`);
               }
+
+              if (embeddedAssets.indexOf(path) < 0) { embeddedAssets.push(path); }
               return content;
             }
 
-            function packCss(s, left, path, right) {
-              function getCssContent(path) {
-                return getContent(path).replace(/^\s*(?:\/\*[\s\S]*?\*\/\s*)+/, '');
+            function getRefPath(path) {
+              var relPath, dest;
+              if (!fs.existsSync(path)) {
+                grunt.fail.fatal(`File doesn't exist: ${path}`);
               }
+              relPath = path.indexOf(APP_PATH) === 0 ?
+                pathUtil.relative(APP_PATH, path) : pathUtil.basename(path);
+              dest = pathUtil.join(WORK_APP_PATH, relPath);
 
-              path = pathUtil.join(SRC_DIR_PATH, path);
-              excludeSrcAssets.push(path);
-              if (UNPACK_ASSETS.indexOf(path) < 0) {
-                let content = getCssContent(path).replace(/^\s*@charset\s+[^;]+;/gm, '');
-                if (!/\.min\.css$/.test(path)) { content = minCss(productSrc(content)); }
+              if (referredAssets.findIndex(referredAsset => referredAsset.src === path) < 0) {
+                referredAssets.push({src: path, dest: dest});
+              }
+              return relPath;
+            }
+
+            function packCss(s, left, path, right) {
+              path = pathUtil.resolve(APP_PATH, path);
+              if (SHARE_ASSETS.indexOf(path) < 0) {
+                let content = getContent(path).replace(/^\s*@charset\s+[^;]+;/gm, '');
+                if (!/\.min\./.test(path)) { content = minCss(productSrc(content)); }
                 return `<style>${addProtectedText(content)}</style>`;
               } else {
-                let basename = pathUtil.basename(path);
-                if (/\.min\.css$/.test(path)) {
-                  if (copiedAssets.indexOf(path) < 0) { copiedAssets.push(path); }
-                } else {
-                  basename = basename.replace(/\.css$/, '.min.css');
-                  fs.writeFileSync(pathUtil.join(WORK_DIR_PATH, basename),
-                    minCss(productSrc(getCssContent(path))));
-                }
-                return addProtectedText(`${left}./${basename}${right}`);
+                return addProtectedText(`${left}./${getRefPath(path)}${right}`);
               }
             }
 
             function packJs(s, left, path, right) {
-              function getJsContent(path) {
-                return getContent(path)
-                  .replace(/^\s*(?:\/\*[\s\S]*?\*\/\s*)+/, '')
-                  .replace(/\s*\n\s*\/\/[^\n]*\s*$/, '')
-                  .replace(/^[;\s]+/, '')
-                  .replace(/[;\s]*$/, ';');
-              }
-
-              path = pathUtil.join(SRC_DIR_PATH, path);
-              excludeSrcAssets.push(path);
-              if (UNPACK_ASSETS.indexOf(path) < 0) {
-                let content = getJsContent(path);
-                if (!/\.min\.js$/.test(path)) { content = minJs(productSrc(content)); }
+              path = pathUtil.resolve(APP_PATH, path);
+              if (SHARE_ASSETS.indexOf(path) < 0) {
+                let content = getContent(path).replace(/^[;\s]+/, '').replace(/[;\s]*$/, ';');
+                if (!/\.min\./.test(path)) { content = minJs(productSrc(content)); }
                 return `<script>${addProtectedText(content)}</script>`;
               } else {
-                let basename = pathUtil.basename(path);
-                if (/\.min\.js$/.test(path)) {
-                  if (copiedAssets.indexOf(path) < 0) { copiedAssets.push(path); }
-                } else {
-                  basename = basename.replace(/\.js$/, '.min.js');
-                  fs.writeFileSync(pathUtil.join(WORK_DIR_PATH, basename),
-                    minJs(productSrc(getJsContent(path))));
-                }
-                return addProtectedText(`${left}./${basename}${right}`);
+                return addProtectedText(`${left}./${getRefPath(path)}${right}`);
               }
             }
 
@@ -210,50 +199,66 @@ module.exports = grunt => {
           }
         },
         expand: true,
-        cwd: `${SRC_DIR_PATH}/`,
+        cwd: `${APP_PATH}/`,
         src: '**/*.html',
-        dest: `${WORK_DIR_PATH}/`
+        dest: `${WORK_APP_PATH}/`
       },
 
-      copyFiles: {
+      getCopyFiles: {
         options: {
           handlerByTask: () => {
-            var files = SRC_ASSETS
-              .filter(path => excludeSrcAssets.indexOf(path) < 0)
+            var txtFiles = TXT_APP_ASSETS
+              .filter(path => embeddedAssets.indexOf(path) < 0 &&
+                referredAssets.findIndex(referredAsset => referredAsset.src === path) < 0)
               .map(srcPath => ({
                 src: srcPath,
-                dest: pathUtil.join(WORK_DIR_PATH, pathUtil.relative(SRC_DIR_PATH, srcPath))
+                dest: pathUtil.join(WORK_APP_PATH, pathUtil.relative(APP_PATH, srcPath))
               }))
-              .concat(copiedAssets.map(srcPath => ({
-                src: srcPath,
-                dest: pathUtil.join(WORK_DIR_PATH, pathUtil.basename(srcPath))
-              })))
-              .reduce((assets, file) => {
-                // /(?<!\.min)\.(?:css|js|svg)$/
-                if (/\.(?:css|js|svg)$/.test(file.src) && !/\.min\.(?:css|js|svg)$/.test(file.src)) {
-                  // files that are not referred from html
-                  let content = fs.readFileSync(file.src, {encoding: 'utf8'}).trim();
-                  if (/\.css$/.test(file.src)) {
-                    content = minCss(productSrc(content.replace(/^\s*(?:\/\*[\s\S]*?\*\/\s*)+/, '')));
-                  } else if (/\.js$/.test(file.src)) {
-                    content = minJs(productSrc(content));
-                  } else { // svg
-                    content = htmlclean(content);
-                  }
-                  fs.writeFileSync(file.dest, content);
-                } else {
-                  assets.push(file);
-                }
-                return assets;
-              }, [])
-              .concat(EXT_ASSETS);
-            files.push({
-              src: PACKAGE_JSON_PATH,
-              dest: pathUtil.join(WORK_DIR_PATH, 'package.json')
-            });
-            grunt.config.merge({copy: {copyFiles: {files: files}}});
+              .concat(referredAssets);
+            grunt.config.merge({copy: {txtFiles: {files: txtFiles}}});
           }
         }
+      }
+    },
+
+    copy: {
+      txtFiles: {
+        options: {
+          process: (content, path) => {
+            var isMin = /\.min\./.test(path);
+            if (/\.css$/.test(path)) {
+              content = removeBanner(content);
+              if (!isMin) { content = minCss(productSrc(content)); }
+            } else if (/\.js$/.test(path)) {
+              content = removeBanner(content);
+              if (!isMin) { content = minJs(productSrc(content)); }
+            } else if (/\.svg$/.test(path)) {
+              if (!isMin) { content = htmlclean(content); }
+            }
+            return content;
+          }
+        }
+      },
+
+      // `copy.options.process` breaks binary files.
+      binFiles: {
+        files: [{
+          expand: true,
+          cwd: `${APP_PATH}/`,
+          src: ['**/*.{png,svgz,jpg,jpeg,jpe,jif,jfif,jfi,webp,bmp,dib,git,eot,ttf,woff,woff2}'],
+          dest: `${WORK_APP_PATH}/`
+        }].concat(
+          EXT_BIN_FILES,
+          // `dependencies` in `package.json`
+          Object.keys(PACKAGE_JSON.dependencies)
+            .filter(moduleName => EXPAND_MODULES.indexOf(moduleName) < 0)
+            .map(moduleName => ({
+              expand: true,
+              cwd: ROOT_PATH,
+              src: `node_modules/${moduleName}/**`,
+              dest: `${WORK_APP_PATH}/`
+            }))
+        )
       }
     }
   });
@@ -262,8 +267,8 @@ module.exports = grunt => {
     const packager = require('electron-packager');
     var done = this.async(); // eslint-disable-line no-invalid-this
     packager({
-      dir: WORK_DIR_PATH,
-      out: OUT_DIR_PATH,
+      dir: WORK_APP_PATH,
+      out: DIST_PATH,
       icon: ICON_PATH,
       // name: PACKAGE_JSON.name, // Executable name that is not productName.
       version: PACKAGE_JSON.electronVersion,
@@ -296,7 +301,7 @@ module.exports = grunt => {
 
         // Additional files
         packages.forEach(packagePath => {
-          ADD_FILES.forEach(addFile => {
+          PACK_ADD_FILES.forEach(addFile => {
             if (addFile.isTarget(packagePath)) {
               addFiles = addFiles.concat(addFile.files.map(src => ({
                 src: src,
@@ -331,12 +336,12 @@ module.exports = grunt => {
       return;
     }
     packages.forEach(packagePath => {
-      var archivePath = pathUtil.join(OUT_DIR_PATH, getArchiveBaseName(packagePath));
+      var archivePath = pathUtil.join(DIST_PATH, getArchiveBaseName(packagePath));
       if (/-darwin-/.test(packagePath)) {
         grunt.log.subhead('*'.repeat(60));
         grunt.log.writeln('This file that may include symlinks has to be archived manually.');
         grunt.log.subhead(packagePath);
-        grunt.log.writeln(`e.g.\ncd ${OUT_DIR_PATH}\n` +
+        grunt.log.writeln(`e.g.\ncd ${DIST_PATH}\n` +
           `mv ${pathUtil.basename(packagePath)} ${PACKAGE_JSON.productName}\n` +
           `tar czvf ${pathUtil.basename(archivePath)}.tar.gz ${PACKAGE_JSON.productName}`);
         grunt.log.subhead('*'.repeat(60));
@@ -373,7 +378,7 @@ module.exports = grunt => {
       targetFiles, entries = [], index = -1;
 
     function getHash() {
-      var input = fs.createReadStream(pathUtil.join(OUT_DIR_PATH, targetFiles[++index])),
+      var input = fs.createReadStream(pathUtil.join(DIST_PATH, targetFiles[++index])),
         hash = crypto.createHash('sha256');
       input.on('readable', () => {
         var data = input.read();
@@ -382,7 +387,7 @@ module.exports = grunt => {
         } else {
           entries.push(`${hash.digest('hex')}  ${targetFiles[index]}`);
           if (index >= targetFiles.length - 1) {
-            fs.writeFileSync(pathUtil.join(OUT_DIR_PATH, 'SHASUMS256.txt'),
+            fs.writeFileSync(pathUtil.join(DIST_PATH, 'SHASUMS256.txt'),
               `${entries.join('\n')}\n`);
             done();
           } else {
@@ -392,7 +397,7 @@ module.exports = grunt => {
       });
     }
 
-    fs.readdir(OUT_DIR_PATH, (error, files) => {
+    fs.readdir(DIST_PATH, (error, files) => {
       if (error) {
         done(error);
       } else if (!files || !files.length) {
@@ -411,8 +416,9 @@ module.exports = grunt => {
   grunt.registerTask('default', [
     'clean:workDir',
     'taskHelper:packHtml',
-    'taskHelper:copyFiles',
-    'copy:copyFiles',
+    'taskHelper:getCopyFiles',
+    'copy:txtFiles',
+    'copy:binFiles',
     'package',
     'copy:addFiles',
     'archive'

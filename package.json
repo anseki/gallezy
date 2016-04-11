@@ -1,7 +1,7 @@
 {
   "name": "gallezy",
   "productName": "Gallezy",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Super Simple Image Gallery App http://anseki.github.io/gallezy/",
   "keywords": [
     "electron-app",
@@ -12,7 +12,10 @@
   "main": "main.js",
   "electronVersion": "0.37.3",
   "dependencies": {
-    "stats-filelist": "^0.1.1"
+    "stats-filelist": "^0.1.1",
+    "jquery": "^2.2.1",
+    "jquery-contextmenu-common": "0.0.6",
+    "jquery-plainoverlay": "^0.8.0"
   },
   "devDependencies": {
     "archiver": "^0.21.0",
@@ -29,9 +32,6 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.2.0",
     "htmlclean": "^2.7.7",
-    "jquery": "^2.2.1",
-    "jquery-contextmenu-common": "0.0.6",
-    "jquery-plainoverlay": "^0.8.0",
     "lodash": "^4.6.1",
     "rimraf": "^2.5.2"
   },
