@@ -11,11 +11,11 @@ You can operate all of Gallezy by context menu.
 
 ## Download
 
-- [Windows x64](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.3-win32-x64.zip)
-- [Windows ia32](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.3-win32-ia32.zip)
-- [OS X](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.3-darwin-x64.tar.gz)
-- [Linux x64](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.3-linux-x64.zip)
-- [Linux ia32](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.3-linux-ia32.zip)
+- [Windows x64](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.4-win32-x64.zip)
+- [Windows ia32](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.4-win32-ia32.zip)
+- [OS X](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.4-darwin-x64.tar.gz)
+- [Linux x64](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.4-linux-x64.zip)
+- [Linux ia32](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.4-linux-ia32.zip)
 - [Checksum](https://github.com/anseki/gallezy/raw/master/dist/SHASUMS256.txt)
 
 Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/raw/master/dist/SHASUMS256.txt).

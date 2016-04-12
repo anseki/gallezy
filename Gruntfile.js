@@ -18,7 +18,7 @@ module.exports = grunt => {
     WORK_APP_PATH = pathUtil.join(WORK_PATH, 'app'),
 
     PACKAGE_JSON_PATH = pathUtil.join(ROOT_PATH, 'package.json'),
-    PACKAGE_JSON = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH)),
+    PACKAGE_JSON = require(PACKAGE_JSON_PATH),
 
     TXT_APP_ASSETS = filelist.getSync(APP_PATH, {
       filter: stats => stats.isFile() && /\.(?:css|js|svg)$/.test(stats.name),
@@ -41,11 +41,14 @@ module.exports = grunt => {
     EXPAND_MODULES =
       ['electron-prebuilt', 'jquery', 'jquery-contextmenu-common', 'jquery-plainoverlay'],
 
-    EXT_BIN_FILES = [
+    EXT_TXT_FILES = [
       {
         src: PACKAGE_JSON_PATH,
         dest: pathUtil.join(WORK_APP_PATH, 'package.json')
-      },
+      }
+    ],
+
+    EXT_BIN_FILES = [
       {
         expand: true,
         cwd: pathUtil.join(SRC_PATH, 'custom-lib/dist/'),
@@ -214,7 +217,7 @@ module.exports = grunt => {
                 src: srcPath,
                 dest: pathUtil.join(WORK_APP_PATH, pathUtil.relative(APP_PATH, srcPath))
               }))
-              .concat(referredAssets);
+              .concat(referredAssets, EXT_TXT_FILES);
             grunt.config.merge({copy: {txtFiles: {files: txtFiles}}});
           }
         }
@@ -234,6 +237,12 @@ module.exports = grunt => {
               if (!isMin) { content = minJs(productSrc(content)); }
             } else if (/\.svg$/.test(path)) {
               if (!isMin) { content = htmlclean(content); }
+            } else if (pathUtil.basename(path) === 'package.json') {
+              let packageJson = JSON.parse(content);
+              // keys that are not required by electron
+              ['keywords', 'dependencies', 'devDependencies', 'homepage', 'repository', 'bugs']
+                .forEach(key => { delete packageJson[key]; });
+              content = JSON.stringify(packageJson);
             }
             return content;
           }
