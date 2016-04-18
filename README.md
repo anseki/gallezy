@@ -18,7 +18,8 @@ You can operate all of Gallezy by context menu.
 - [Linux ia32](https://github.com/anseki/gallezy/raw/master/dist/gallezy-0.0.4-linux-ia32.zip)
 - [Checksum](https://github.com/anseki/gallezy/raw/master/dist/SHASUMS256.txt)
 
-Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/raw/master/dist/SHASUMS256.txt).
+Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/raw/master/dist/SHASUMS256.txt).  
+Instant way to get checksum of a file for Windows is [hashfile-contextmenu](https://github.com/anseki/hashfile-contextmenu). And `shasum` or `sha256sum` commands for others.
 
 ## Install
 

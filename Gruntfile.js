@@ -74,8 +74,7 @@ module.exports = grunt => {
     ICON_PATH = pathUtil.join(SRC_PATH, 'app'),
     BUNDLE_ID = 'io.github.anseki.gallezy';
 
-  var embeddedAssets = [], referredAssets = [],
-    protectedText = [], packages;
+  var embeddedAssets = [], referredAssets = [], protectedText = [], packages;
 
   function productSrc(content) {
     return content
@@ -263,7 +262,7 @@ module.exports = grunt => {
             .filter(moduleName => EXPAND_MODULES.indexOf(moduleName) < 0)
             .map(moduleName => ({
               expand: true,
-              cwd: ROOT_PATH,
+              cwd: `${ROOT_PATH}/`,
               src: `node_modules/${moduleName}/**`,
               dest: `${WORK_APP_PATH}/`
             }))
