@@ -2,7 +2,7 @@
 
 Super Simple Image Gallery App
 
-[![ss01](ss01.png)](http://anseki.github.io/gallezy/)
+[![ss01](ss01.png)](https://anseki.github.io/gallezy/)
 
 - You have to learn nothing to use Gallezy.
 - You have to configure nothing for Gallezy.
