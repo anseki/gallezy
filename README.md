@@ -1,5 +1,7 @@
 # Gallezy
 
+[![npm](https://img.shields.io/npm/v/gallezy.svg)](https://www.npmjs.com/package/gallezy) [![GitHub issues](https://img.shields.io/github/issues/anseki/gallezy.svg)](https://github.com/anseki/gallezy/issues) [![David](https://img.shields.io/david/anseki/gallezy.svg)](package.json) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE-MIT)
+
 Super Simple Image Gallery App
 
 [![ss01](ss01.png)](https://anseki.github.io/gallezy/)
