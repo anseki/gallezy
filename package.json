@@ -1,7 +1,7 @@
 {
   "name": "gallezy",
   "productName": "Gallezy",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Super Simple Image Gallery App https://anseki.github.io/gallezy/",
   "keywords": [
     "electron-app",

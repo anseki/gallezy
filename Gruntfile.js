@@ -72,9 +72,25 @@ module.exports = grunt => {
     ],
 
     ICON_PATH = pathUtil.join(SRC_PATH, 'app'),
-    BUNDLE_ID = 'io.github.anseki.gallezy';
+    BUNDLE_ID = 'io.github.anseki.gallezy',
 
-  var embeddedAssets = [], referredAssets = [], protectedText = [], packages;
+    DL_INFO = `
+## Download
+
+- [Windows x64](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-win32-x64.zip)
+- [Windows ia32](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-win32-ia32.zip)
+- [OS X](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-darwin-x64.tar.gz)
+- [Linux x64](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-linux-x64.zip)
+- [Linux ia32](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-linux-ia32.zip)
+- [Checksum](https://github.com/anseki/gallezy/releases/download/v@VERSION@/SHASUMS256.txt)
+
+Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/releases/download/v@VERSION@/SHASUMS256.txt).  
+Instant way to get checksum of a file for Windows is [hashfile-contextmenu](https://github.com/anseki/hashfile-contextmenu). And \`shasum\` or \`sha256sum\` commands for others.
+`,
+
+    embeddedAssets = [], referredAssets = [], protectedText = [];
+
+  let packages;
 
   function productSrc(content) {
     return content
@@ -109,7 +125,8 @@ module.exports = grunt => {
 
   // Redo String#replace until target is not found
   function replaceComplete(text, re, fnc) {
-    var doNext = true, reg = new RegExp(re); // safe (not literal)
+    const reg = new RegExp(re); // safe (not literal)
+    let doNext = true;
     function fncWrap() {
       doNext = true;
       return fnc.apply(null, arguments);
@@ -136,12 +153,11 @@ module.exports = grunt => {
         options: {
           handlerByContent: content => {
             function getContent(path) {
-              var content;
               if (!fs.existsSync(path)) {
                 grunt.fail.fatal(`File doesn't exist: ${path}`);
               }
-              content = removeBanner(fs.readFileSync(path, {encoding: 'utf8'})).trim();
-              if (/\f|\x07/.test(content)) {
+              const content = removeBanner(fs.readFileSync(path, {encoding: 'utf8'})).trim();
+              if (/\f|\x07/.test(content)) { // eslint-disable-line no-control-regex
                 grunt.fail.fatal(`\\f or \\x07 that is used as marker is included: ${path}`);
               }
 
@@ -150,13 +166,12 @@ module.exports = grunt => {
             }
 
             function getRefPath(path) {
-              var relPath, dest;
               if (!fs.existsSync(path)) {
                 grunt.fail.fatal(`File doesn't exist: ${path}`);
               }
-              relPath = path.indexOf(APP_PATH) === 0 ?
-                pathUtil.relative(APP_PATH, path) : pathUtil.basename(path);
-              dest = pathUtil.join(WORK_APP_PATH, relPath);
+              const relPath = path.indexOf(APP_PATH) === 0 ?
+                  pathUtil.relative(APP_PATH, path) : pathUtil.basename(path),
+                dest = pathUtil.join(WORK_APP_PATH, relPath);
 
               if (referredAssets.findIndex(referredAsset => referredAsset.src === path) < 0) {
                 referredAssets.push({src: path, dest: dest});
@@ -186,7 +201,7 @@ module.exports = grunt => {
               }
             }
 
-            if (/\f|\x07/.test(content)) {
+            if (/\f|\x07/.test(content)) { // eslint-disable-line no-control-regex
               grunt.fail.fatal('\\f or \\x07 that is used as marker is included');
             }
 
@@ -197,7 +212,8 @@ module.exports = grunt => {
               .replace(/<\/style><style>/g, '')
               .replace(/<\/script><script>/g, '');
             // Restore protected texts
-            return replaceComplete(content, /\f(\d+)\x07/g, (s, i) => protectedText[i] || '');
+            return replaceComplete(content, /\f(\d+)\x07/g, // eslint-disable-line no-control-regex
+              (s, i) => protectedText[i] || '');
           }
         },
         expand: true,
@@ -209,7 +225,7 @@ module.exports = grunt => {
       getCopyFiles: {
         options: {
           handlerByTask: () => {
-            var txtFiles = TXT_APP_ASSETS
+            const txtFiles = TXT_APP_ASSETS
               .filter(path => embeddedAssets.indexOf(path) < 0 &&
                 referredAssets.findIndex(referredAsset => referredAsset.src === path) < 0)
               .map(srcPath => ({
@@ -220,6 +236,27 @@ module.exports = grunt => {
             grunt.config.merge({copy: {txtFiles: {files: txtFiles}}});
           }
         }
+      },
+
+      readme: { // Update download links
+        options: {
+          handlerByContent: content => {
+            const dlInfo = DL_INFO.replace(/@VERSION@/g, PACKAGE_JSON.version);
+            let found;
+
+            content = content.replace(/\n##\s*Download\n[^]+?(?=\n##|$)/, () => {
+              found = true;
+              return dlInfo;
+            });
+
+            if (!found) {
+              grunt.fail.fatal('Can\'t parse README.md');
+            }
+            return content;
+          }
+        },
+        src: `${ROOT_PATH}/README.md`,
+        dest: `${ROOT_PATH}/README.md`
       }
     },
 
@@ -227,7 +264,7 @@ module.exports = grunt => {
       txtFiles: {
         options: {
           process: (content, path) => {
-            var isMin = /\.min\./.test(path);
+            const isMin = /\.min\./.test(path);
             if (/\.css$/.test(path)) {
               content = removeBanner(content);
               if (!isMin) { content = minCss(productSrc(content)); }
@@ -272,8 +309,8 @@ module.exports = grunt => {
   });
 
   grunt.registerTask('package', function() {
-    const packager = require('electron-packager');
-    var done = this.async(); // eslint-disable-line no-invalid-this
+    const packager = require('electron-packager'),
+      done = this.async(); // eslint-disable-line no-invalid-this
     packager({
       dir: WORK_APP_PATH,
       out: DIST_PATH,
@@ -327,24 +364,25 @@ module.exports = grunt => {
 
   grunt.registerTask('archive', function() {
     function getArchiveBaseName(packagePath) {
-      var name = pathUtil.basename(packagePath)
+      const name = pathUtil.basename(packagePath)
         .replace(new RegExp('\\b(?:' +
-          ['productName', 'name'].map(key => PACKAGE_JSON[key].replace(/[\x00-\x7f]/g,
-            s => '\\x' + ('00' + s.charCodeAt().toString(16)).substr(-2))).join('|') +
+          ['productName', 'name'].map(
+            key => PACKAGE_JSON[key].replace(/[\x00-\x7f]/g, // eslint-disable-line no-control-regex
+              s => '\\x' + ('00' + s.charCodeAt().toString(16)).substr(-2))).join('|') +
           ')[-\._\#\+]*', 'gi'), '');
       return `${PACKAGE_JSON.name}-${PACKAGE_JSON.version}-${name}`;
     }
 
     const archiver = require('archiver'),
-      rimraf = require('rimraf');
-    var done = this.async(), // eslint-disable-line no-invalid-this
-      count = 0;
+      rimraf = require('rimraf'),
+      done = this.async(); // eslint-disable-line no-invalid-this
+    let count = 0;
     if (!packages || !packages.length) {
       done();
       return;
     }
     packages.forEach(packagePath => {
-      var archivePath = pathUtil.join(DIST_PATH, getArchiveBaseName(packagePath));
+      let archivePath = pathUtil.join(DIST_PATH, getArchiveBaseName(packagePath));
       if (/-darwin-/.test(packagePath)) {
         grunt.log.subhead('*'.repeat(60));
         grunt.log.writeln('This file that may include symlinks has to be archived manually.');
@@ -381,15 +419,16 @@ module.exports = grunt => {
   });
 
   grunt.registerTask('checksum', function() {
-    const crypto = require('crypto');
-    var done = this.async(), // eslint-disable-line no-invalid-this
-      targetFiles, entries = [], index = -1;
+    const crypto = require('crypto'),
+      done = this.async(), // eslint-disable-line no-invalid-this
+      entries = [];
+    let targetFiles, index = -1;
 
     function getHash() {
-      var input = fs.createReadStream(pathUtil.join(DIST_PATH, targetFiles[++index])),
+      const input = fs.createReadStream(pathUtil.join(DIST_PATH, targetFiles[++index])),
         hash = crypto.createHash('sha256');
       input.on('readable', () => {
-        var data = input.read();
+        const data = input.read();
         if (data) {
           hash.update(data);
         } else {
@@ -431,4 +470,6 @@ module.exports = grunt => {
     'copy:addFiles',
     'archive'
   ]);
+
+  grunt.registerTask('readme', ['taskHelper:readme']);
 };
