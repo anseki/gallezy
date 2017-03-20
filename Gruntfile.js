@@ -77,14 +77,14 @@ module.exports = grunt => {
     DL_INFO = `
 ## Download
 
-- [Windows x64](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-win32-x64.zip)
-- [Windows ia32](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-win32-ia32.zip)
-- [OS X](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-darwin-x64.tar.gz)
-- [Linux x64](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-linux-x64.zip)
-- [Linux ia32](https://github.com/anseki/gallezy/releases/download/v@VERSION@/gallezy-@VERSION@-linux-ia32.zip)
-- [Checksum](https://github.com/anseki/gallezy/releases/download/v@VERSION@/SHASUMS256.txt)
+- [Windows x64](https://github.com/anseki/gallezy/releases/download/@VERSION@/gallezy-@VERSION@-win32-x64.zip)
+- [Windows ia32](https://github.com/anseki/gallezy/releases/download/@VERSION@/gallezy-@VERSION@-win32-ia32.zip)
+- [OS X](https://github.com/anseki/gallezy/releases/download/@VERSION@/gallezy-@VERSION@-darwin-x64.tar.gz)
+- [Linux x64](https://github.com/anseki/gallezy/releases/download/@VERSION@/gallezy-@VERSION@-linux-x64.zip)
+- [Linux ia32](https://github.com/anseki/gallezy/releases/download/@VERSION@/gallezy-@VERSION@-linux-ia32.zip)
+- [Checksum](https://github.com/anseki/gallezy/releases/download/@VERSION@/SHASUMS256.txt)
 
-Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/releases/download/v@VERSION@/SHASUMS256.txt).  
+Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/releases/download/@VERSION@/SHASUMS256.txt).  
 Instant way to get checksum of a file for Windows is [hashfile-contextmenu](https://github.com/anseki/hashfile-contextmenu). And \`shasum\` or \`sha256sum\` commands for others.
 `,
 
