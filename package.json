@@ -12,10 +12,10 @@
   "main": "main.js",
   "electronVersion": "0.37.3",
   "dependencies": {
-    "stats-filelist": "^0.1.1",
+    "stats-filelist": "^1.0.0",
     "jquery": "^2.2.1",
-    "jquery-contextmenu-common": "0.0.6",
-    "jquery-plainoverlay": "^0.8.0"
+    "jquery-contextmenu-common": "0.0.9",
+    "jquery-plainoverlay": "^0.8.3"
   },
   "devDependencies": {
     "archiver": "^0.21.0",
