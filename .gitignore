@@ -4,5 +4,4 @@ node_modules
 temp
 *.asar
 stats.json
-src/custom-lib/dist/font/*
 dist
