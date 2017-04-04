@@ -13,14 +13,14 @@ You can operate all of Gallezy by context menu.
 
 ## Download
 
-- [Windows x64](https://github.com/anseki/gallezy/releases/download/1.0.0/gallezy-1.0.0-win32-x64.zip)
-- [Windows ia32](https://github.com/anseki/gallezy/releases/download/1.0.0/gallezy-1.0.0-win32-ia32.zip)
-- [OS X](https://github.com/anseki/gallezy/releases/download/1.0.0/gallezy-1.0.0-darwin-x64.tar.gz)
-- [Linux x64](https://github.com/anseki/gallezy/releases/download/1.0.0/gallezy-1.0.0-linux-x64.zip)
-- [Linux ia32](https://github.com/anseki/gallezy/releases/download/1.0.0/gallezy-1.0.0-linux-ia32.zip)
-- [Checksum](https://github.com/anseki/gallezy/releases/download/1.0.0/SHASUMS256.txt)
+- [Windows x64](https://github.com/anseki/gallezy/releases/download/1.0.1/gallezy-1.0.1-win32-x64.zip)
+- [Windows ia32](https://github.com/anseki/gallezy/releases/download/1.0.1/gallezy-1.0.1-win32-ia32.zip)
+- [OS X](https://github.com/anseki/gallezy/releases/download/1.0.1/gallezy-1.0.1-darwin-x64.tar.gz)
+- [Linux x64](https://github.com/anseki/gallezy/releases/download/1.0.1/gallezy-1.0.1-linux-x64.zip)
+- [Linux ia32](https://github.com/anseki/gallezy/releases/download/1.0.1/gallezy-1.0.1-linux-ia32.zip)
+- [Checksum](https://github.com/anseki/gallezy/releases/download/1.0.1/SHASUMS256.txt)
 
-Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/releases/download/1.0.0/SHASUMS256.txt).  
+Since these don't have code signing, you should check a [checksum](https://github.com/anseki/gallezy/releases/download/1.0.1/SHASUMS256.txt).  
 Instant way to get checksum of a file for Windows is [hashfile-contextmenu](https://github.com/anseki/hashfile-contextmenu). And `shasum` or `sha256sum` commands for others.
 
 ## Install
