@@ -13,7 +13,7 @@ function key2label(key) {
  * @param {number} bytes - Bytes.
  * @param {number} [digits] - The number of digits to appear after the decimal point.
  * @param {boolean} [suppress] - Suppress trailer zeros after the decimal point.
- * @returns {Array} - [bytes, unit].
+ * @returns {Array} [bytes, unit].
  */
 module.exports.bytesToString = (bytes, digits, suppress) => {
   const UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];

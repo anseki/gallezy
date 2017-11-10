@@ -127,7 +127,7 @@ window.addEventListener('load', () => {
 
   /**
    * @param {boolean|null} start - true: Start scrolling, false: Stop and init scrolling
-   * @returns {boolean} started - true: Scrolling was started, false: it was finished or no scroll-length
+   * @returns {boolean} true: Scrolling was started, false: it was finished or no scroll-length
    */
   function scroll(start) {
     var maxScrollLeft, maxScrollTop, actScrollLeft, actScrollTop;
@@ -339,7 +339,7 @@ window.addEventListener('load', () => {
    * @param {boolean|null} avoidEnlarge - (winRatio-MODE only) Don't up scale.
    * @param {boolean|null} byMenuValue - Don't update value of menu.
    * @param {boolean|null} disableEffect - Disable rotate effect.
-   * @returns {number} size - imgRatio or winRatio
+   * @returns {number} imgRatio or winRatio
    */
   function updateSize(imgRatioEnabled, size, winRatioBase, avoidEnlarge, byMenuValue, disableEffect) {
     /*
@@ -404,7 +404,7 @@ window.addEventListener('load', () => {
   /**
    * @param {boolean} rotate - new rotate.
    * @param {boolean} [avoidUpdateSize] - Don't call `updateSize`.
-   * @returns {number} rotate - deg
+   * @returns {number} deg
    */
   function updateRotate(rotate, avoidUpdateSize) {
     if ((curRotate = typeof rotate === 'number' ? rotate : (curRotate + 90)) >= 360) { curRotate = 0; }

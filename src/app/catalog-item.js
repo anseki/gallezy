@@ -132,7 +132,7 @@ function updateBBox() {
 
 /**
  * @param {number} [size] - Thumbnail size. If it is in list-view mode, this is ignored, and size is reset.
- * @returns {CatalogItem} - Current instance.
+ * @returns {CatalogItem} Current instance.
  */
 CatalogItem.prototype.setThumbSize = function(size) {
   if (listView) {

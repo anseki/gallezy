@@ -37,7 +37,7 @@ var ui = {}, stats, uiReadyCb = {};
  * Get UI Window.
  * @param {string} uiId - UI Window ID.
  * @param {Function} ready - Callback that is called when UI is ready.
- * @returns {BrowserWindow} ui - UI Window.
+ * @returns {BrowserWindow} UI Window.
  */
 function getUi(uiId, ready) {
   var statsUi = stats.ui[uiId];
