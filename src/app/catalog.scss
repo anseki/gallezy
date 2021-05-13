@@ -100,19 +100,19 @@ $item-border-width: 3px;
       padding: 0.5ex 2ch 0 2px;
       &:last-of-type { padding-right: 2px; }
 
-      & > span { display: inline-block; }
+      > span { display: inline-block; }
 
       &.size {
-        & span:nth-of-type(1) {
+        span:nth-of-type(1) {
           min-width: 3ch;
           text-align: right;
         }
-        & span:nth-of-type(2) { min-width: 2ch; /* from bytesToString() */ }
-        & span:nth-of-type(3) { min-width: 2ch; }
+        span:nth-of-type(2) { min-width: 2ch; /* from bytesToString() */ }
+        span:nth-of-type(3) { min-width: 2ch; }
       }
 
       &.area {
-        & span {
+        span {
           text-align: right;
           &:nth-of-type(1) { min-width: 7ch; }
           &:nth-of-type(2) { min-width: 8ch; }
