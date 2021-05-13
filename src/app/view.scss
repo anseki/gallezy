@@ -100,7 +100,7 @@ $panel-min-height: 80px;
 #info {
   display: flex;
 
-  & > div {
+  > div {
     @include font-rem-by-px(12.8);
     white-space: nowrap;
     padding: 2px 2ch 2px 2px;
