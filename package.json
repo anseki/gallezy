@@ -28,9 +28,9 @@
     "grunt-task-helper": "^0.3.8",
     "gulp": "^3.9.1",
     "gulp-consolidate": "^0.2.0",
-    "gulp-iconfont": "^6.0.0",
+    "gulp-iconfont": "^11.0.1",
     "gulp-rename": "^1.2.2",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.1.0",
     "htmlclean": "^3.0.2",
     "lodash": "^4.17.21",
     "rimraf": "^3.0.2"
