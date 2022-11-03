@@ -26,7 +26,7 @@
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-task-helper": "^0.3.8",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-consolidate": "^0.2.0",
     "gulp-iconfont": "^6.0.0",
     "gulp-rename": "^1.2.2",
